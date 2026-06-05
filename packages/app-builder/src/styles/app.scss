@@ -6525,13 +6525,29 @@ body {
   width: 100%;
 
   &__row {
-    display: flex;
+    // [drag] [column pill (fill)] [order pill (fixed)] [trash btn]
+    display: grid;
+    grid-template-columns: auto 1fr 130px auto;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     width: 100%;
   }
 
+  &__drag {
+    width: 16px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6C73A8;
+    cursor: grab;
+    flex-shrink: 0;
+
+    &:active { cursor: grabbing; }
+  }
+
   &__pill {
+    min-width: 0;
     height: 36px;
     display: flex;
     align-items: center;
@@ -6540,60 +6556,83 @@ body {
     background: #434A60;
     border-radius: 6px;
     color: #FFFFFF;
-    flex: 1;
-    min-width: 0;
 
-    &--column { flex: 1.4; }
-    &--order { flex: 1; }
+    // The DS dropdown trigger is itself `.jf-dropdown` (not __trigger). Strip
+    // its own bg/border/padding so the surrounding pill is the only chip.
+    .jf-dropdown {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      min-height: 0 !important;
+      padding: 0 !important;
+      height: 100% !important;
+      color: #FFFFFF !important;
+      width: 100%;
+    }
+    .jf-dropdown__value {
+      color: #FFFFFF !important;
+      font-weight: 500;
+      flex: 1;
+      min-width: 0;
+    }
+    .jf-dropdown__trailing {
+      color: #A0A6B6 !important;
+    }
+    // Pull "A → Z / Z → A" + chevron to the right inside the order pill.
   }
 
-  &__trash {
-    flex-shrink: 0;
-    width: 36px;
+  // Dark buttons sitting next to the column pill (order + trash). Match the
+  // pill's bg so the row reads as one strip.
+  &__btn {
     height: 36px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
+    padding: 0;
+    width: 36px;
     border: none;
-    background: transparent;
-    color: #A0A6B6;
+    background: #434A60;
+    color: #FFFFFF;
     border-radius: 6px;
     cursor: pointer;
-    transition: color 150ms ease, background 150ms ease;
+    flex-shrink: 0;
+    font-family: var(--font-family-shell);
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 150ms ease;
 
-    &:hover { color: #FFFFFF; background: rgba(255, 255, 255, 0.08); }
+    &:hover { background: #4D5470; }
+
+    // Order button hugs its label ("Ascending" / "Descending") with padding.
+    &--order {
+      width: auto;
+      padding: 0 12px;
+    }
   }
 
+  // (legacy .__trash kept available, unused after switch to .__btn)
+
+  // Matches the "Add Filter" pill in Filter Data — lavender pill, dark text,
+  // plus icon. Keeps both add-actions consistent visually.
   &__add {
     align-self: flex-start;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     height: 32px;
-    padding: 0 8px 0 4px;
+    padding: 0 10px;
     border: none;
-    background: transparent;
-    color: var(--product-apps-default, #7D38EF);
+    background: #DADEF3;
+    color: #2A2D3B;
+    border-radius: 6px;
     font-family: var(--font-family-shell);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    border-radius: 6px;
     transition: background 150ms ease;
 
-    &:hover { background: rgba(125, 56, 239, 0.12); }
-  }
-
-  &__add-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    background: var(--product-apps-default, #7D38EF);
-    color: #FFFFFF;
-    border-radius: 50%;
-    flex-shrink: 0;
+    &:hover { background: #C8CEED; }
   }
 }
 

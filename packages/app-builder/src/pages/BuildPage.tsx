@@ -5127,11 +5127,6 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
                             showHelpText={false}
                           >
                             <div className="connected-table__filters">
-                              <div className="connected-table__filter-chip">
-                                <span className="connected-table__filter-field">Course Name</span>
-                                <span className="connected-table__filter-op">is</span>
-                                <span className="connected-table__filter-value">History</span>
-                              </div>
                               <button type="button" className="connected-table__add-filter">
                                 <Icon name="plus" category="general" size={14} />
                                 <span>Add Filter</span>
@@ -5305,10 +5300,14 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
                                 <div className="data-table-sort">
                                   {sortBy && (
                                     <div className="data-table-sort__row">
-                                      <div className="data-table-sort__pill data-table-sort__pill--column">
-                                        <Icon name="bars-sort" category="arrows" size={16} />
+                                      <span className="data-table-sort__drag" aria-hidden="true">
+                                        <Icon name="grid-dots-vertical" category="general" size={20} />
+                                      </span>
+                                      <div className="data-table-sort__pill">
+                                        <Icon name="bars-filter" category="general" size={16} />
                                         <DSDropdownSingle
                                           size="sm"
+                                          showLeadingIcon={false}
                                           value={sortBy}
                                           onChange={(val) => setSort(val)}
                                           options={cols.map((c) => ({ value: c, label: c }))}
@@ -5317,28 +5316,27 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
                                       <div className="data-table-sort__pill data-table-sort__pill--order">
                                         <DSDropdownSingle
                                           size="sm"
+                                          showLeadingIcon={false}
                                           value={sortOrder}
                                           onChange={(val) => setOrder(val as 'Ascending' | 'Descending')}
                                           options={[
-                                            { value: 'Ascending', label: 'A → Z' },
-                                            { value: 'Descending', label: 'Z → A' },
+                                            { value: 'Ascending', label: 'Ascending' },
+                                            { value: 'Descending', label: 'Descending' },
                                           ]}
                                         />
                                       </div>
                                       <button
                                         type="button"
-                                        className="data-table-sort__trash"
+                                        className="data-table-sort__btn"
                                         aria-label="Remove sort"
                                         onClick={clearSort}
                                       >
-                                        <Icon name="trash" category="general" size={16} />
+                                        <Icon name="trash-filled" category="general" size={16} />
                                       </button>
                                     </div>
                                   )}
                                   <button type="button" className="data-table-sort__add" onClick={addSort}>
-                                    <span className="data-table-sort__add-icon">
-                                      <Icon name="plus" category="general" size={12} />
-                                    </span>
+                                    <Icon name="plus" category="general" size={14} />
                                     <span>Add sort</span>
                                   </button>
                                 </div>
