@@ -1,0 +1,132 @@
+// ============================================
+// JotForm Apps - ProductTable Component (mobile-first card rows)
+// ============================================
+
+.jf-product-table {
+  width: 100%;
+  background: var(--bg-fill);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  font-family: var(--font-family);
+
+  &--selected {
+    outline: 2px solid var(--border-info);
+    outline-offset: 4px;
+  }
+}
+
+.jf-product-table__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.jf-product-table__title {
+  font-size: var(--font-size-paragraph-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--fg-primary);
+}
+
+.jf-product-table__description {
+  font-size: var(--font-size-paragraph-sm);
+  color: var(--fg-secondary);
+}
+
+.jf-product-table__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.jf-product-table__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+}
+
+.jf-product-table__row-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.jf-product-table__name {
+  font-size: var(--font-size-paragraph-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--fg-primary);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jf-product-table__amount {
+  font-size: var(--font-size-paragraph-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--fg-primary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.jf-product-table__row-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.jf-product-table__stat {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: var(--font-size-label-sm);
+  color: var(--fg-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.jf-product-table__stat-label {
+  font-weight: var(--font-weight-regular);
+}
+
+.jf-product-table__stat-value {
+  font-weight: var(--font-weight-bold);
+  color: var(--fg-primary);
+}
+
+.jf-product-table__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-rounded);
+  font-size: var(--font-size-label-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+  white-space: nowrap;
+  margin-left: auto;
+
+  &--in-stock {
+    background: color-mix(in srgb, var(--bg-fill-success, #19A44B) 18%, var(--bg-fill));
+    color: var(--bg-fill-success, #19A44B);
+  }
+
+  &--low-stock {
+    background: color-mix(in srgb, var(--bg-fill-warning, #E8AB19) 18%, var(--bg-fill));
+    color: var(--bg-fill-warning, #E8AB19);
+  }
+
+  &--out-of-stock {
+    background: color-mix(in srgb, var(--bg-fill-error, #DF2125) 14%, var(--bg-fill));
+    color: var(--bg-fill-error, #DF2125);
+  }
+}

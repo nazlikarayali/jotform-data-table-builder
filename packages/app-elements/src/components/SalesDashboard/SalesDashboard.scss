@@ -1,0 +1,316 @@
+// ============================================
+// JotForm Apps - Sales Overview Widget
+// ============================================
+
+.jf-sales {
+  width: 616px;
+  max-width: 100%;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  font-family: var(--font-family, 'Inter', -apple-system, sans-serif);
+  color: var(--fg-primary, #091141);
+  box-sizing: border-box;
+  container-type: inline-size;
+  container-name: jfsales;
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  &--selected {
+    outline: 2px solid var(--border-info);
+    outline-offset: 4px;
+    border-radius: var(--radius-lg, 12px);
+  }
+
+  &--shrinked {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  &--compact {
+    gap: var(--space-3);
+    padding: 0;
+  }
+}
+
+// --- Header -----------------------------------
+.jf-sales__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.jf-sales__title {
+  margin: 0;
+  font-size: var(--font-size-heading-md, 22px);
+  line-height: var(--line-height-heading-md, 28px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--fg-primary, #091141);
+  letter-spacing: -0.01em;
+}
+
+.jf-sales__subtitle {
+  margin: 0;
+  font-size: var(--font-size-paragraph-sm, 14px);
+  line-height: var(--line-height-paragraph-sm, 20px);
+  color: var(--fg-secondary, #353C6A);
+}
+
+// --- KPIs -------------------------------------
+.jf-sales__kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.jf-sales__kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border-secondary, #E5E7F2);
+  border-radius: var(--radius-lg, 12px);
+  background: var(--bg-surface, #FFFFFF);
+  transition: border-color 0.15s ease;
+  min-width: 0;
+
+  &:hover { border-color: var(--border-primary, #979DC6); }
+}
+
+.jf-sales__kpi-label {
+  font-size: var(--font-size-label-md, 14px);
+  line-height: var(--line-height-label-md, 20px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--fg-secondary, #353C6A);
+}
+
+.jf-sales__kpi-value {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--fg-primary, #091141);
+  letter-spacing: -0.02em;
+  word-break: break-word;
+}
+
+.jf-sales__delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  height: 24px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-rounded, 9999px);
+  font-size: var(--font-size-label-sm, 12px);
+  line-height: var(--line-height-label-sm, 16px);
+  font-weight: var(--font-weight-medium, 600);
+
+  &--up {
+    background: var(--bg-surface-success, #DDFBE8);
+    color: var(--fg-success, #19A44B);
+  }
+
+  &--down {
+    background: var(--bg-surface-error, #FCEAEA);
+    color: var(--fg-error, #DF2124);
+  }
+}
+
+// --- Charts -----------------------------------
+.jf-sales__charts {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.jf-sales__chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border-secondary, #E5E7F2);
+  border-radius: var(--radius-lg, 12px);
+  background: var(--bg-surface, #FFFFFF);
+  min-width: 0;
+}
+
+.jf-sales__chart-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.jf-sales__chart-title {
+  margin: 0;
+  font-size: var(--font-size-label-lg, 15px);
+  line-height: var(--line-height-label-lg, 20px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--fg-secondary, #353C6A);
+}
+
+.jf-sales__chart-meta {
+  margin: 2px 0 0;
+  font-size: var(--font-size-label-sm, 12px);
+  line-height: var(--line-height-label-sm, 16px);
+  color: var(--fg-disabled, #979DC6);
+  text-transform: capitalize;
+}
+
+.jf-sales__toggle {
+  display: inline-flex;
+  padding: 2px;
+  background: var(--bg-fill-disabled, #F3F3FE);
+  border-radius: var(--radius-md, 8px);
+  flex: none;
+}
+
+.jf-sales__toggle-btn {
+  height: 28px;
+  padding: 0 var(--space-3);
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--fg-secondary, #353C6A);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover { color: var(--fg-primary, #091141); }
+
+  &--active {
+    background: var(--bg-surface, #FFFFFF);
+    color: var(--fg-primary, #091141);
+    box-shadow: 0 1px 2px rgba(9, 17, 65, 0.08);
+  }
+}
+
+.jf-sales__chart-body {
+  width: 100%;
+  min-height: 200px;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.jf-sales__chart-svg {
+  width: 100%;
+  height: auto;
+  max-height: 240px;
+}
+
+.jf-sales__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 200px;
+  color: var(--fg-disabled, #979DC6);
+  font-size: var(--font-size-paragraph-sm, 14px);
+}
+
+// --- Compact / shrinked tweaks ----------------
+.jf-sales--compact,
+.jf-sales--shrinked {
+  .jf-sales__kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .jf-sales__charts {
+    grid-template-columns: 1fr;
+  }
+}
+
+// --- Container-based responsive (works inside narrow canvases) ---
+@container jfsales (max-width: 640px) {
+  .jf-sales__charts { grid-template-columns: 1fr; }
+}
+
+@container jfsales (max-width: 520px) {
+  .jf-sales {
+    padding: 0;
+    gap: var(--space-3);
+  }
+
+  .jf-sales__title {
+    font-size: var(--font-size-heading-sm, 18px);
+    line-height: var(--line-height-heading-sm, 24px);
+  }
+
+  // Keep 3 KPIs in one row, shrink the contents instead of stacking.
+  .jf-sales__kpis {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .jf-sales__kpi {
+    padding: var(--space-2);
+    gap: 4px;
+  }
+
+  .jf-sales__kpi-label {
+    font-size: 11px;
+    line-height: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .jf-sales__kpi-value {
+    font-size: clamp(15px, 4.8vw, 20px);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .jf-sales__delta {
+    height: 18px;
+    padding: 0 6px;
+    font-size: 10px;
+    line-height: 14px;
+    gap: 2px;
+
+    svg { width: 8px; height: 8px; }
+  }
+
+  .jf-sales__chart-head { align-items: stretch; }
+  .jf-sales__toggle { align-self: flex-start; }
+}
+
+// Fallback for browsers without container query support
+@supports not (container-type: inline-size) {
+  @media (max-width: 720px) {
+    .jf-sales { padding: 0; gap: var(--space-3); }
+    .jf-sales__title {
+      font-size: var(--font-size-heading-sm, 18px);
+      line-height: var(--line-height-heading-sm, 24px);
+    }
+    .jf-sales__kpis {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-2);
+    }
+    .jf-sales__kpi { padding: var(--space-2); gap: 4px; }
+    .jf-sales__kpi-label {
+      font-size: 11px; line-height: 14px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .jf-sales__kpi-value {
+      font-size: clamp(15px, 4.8vw, 20px);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    .jf-sales__delta {
+      height: 18px; padding: 0 6px; font-size: 10px; line-height: 14px; gap: 2px;
+    }
+    .jf-sales__delta svg { width: 8px; height: 8px; }
+    .jf-sales__charts { grid-template-columns: 1fr; }
+    .jf-sales__chart-head { align-items: stretch; }
+    .jf-sales__toggle { align-self: flex-start; }
+  }
+}

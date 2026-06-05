@@ -1,0 +1,112 @@
+// ============================================
+// JotForm Apps - AnalyticsOverview Component
+// ============================================
+
+.jf-analytics-overview {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-family: var(--font-family);
+
+  &--selected {
+    outline: 2px solid var(--border-info);
+    outline-offset: 4px;
+    border-radius: var(--radius-lg);
+  }
+}
+
+.jf-analytics-overview__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.jf-analytics-overview__title {
+  font-size: var(--font-size-paragraph-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--fg-primary);
+}
+
+.jf-analytics-overview__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.jf-analytics-overview__card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-fill);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  min-width: 0;
+}
+
+.jf-analytics-overview__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-width: 0;
+
+  &--value {
+    flex-wrap: wrap;
+    align-items: baseline;
+    row-gap: 4px;
+  }
+}
+
+.jf-analytics-overview__label {
+  font-size: var(--font-size-label-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--fg-secondary);
+}
+
+.jf-analytics-overview__value {
+  font-size: clamp(18px, 5.4vw, 22px);
+  font-weight: var(--font-weight-bold);
+  color: var(--fg-primary);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.jf-analytics-overview__delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-rounded);
+  font-size: var(--font-size-label-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.3;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &--up {
+    background: color-mix(in srgb, var(--bg-fill-success, #19A44B) 18%, var(--bg-fill));
+    color: var(--bg-fill-success, #19A44B);
+  }
+
+  &--down {
+    background: color-mix(in srgb, var(--bg-fill-error, #DF2125) 14%, var(--bg-fill));
+    color: var(--bg-fill-error, #DF2125);
+  }
+}
+
+.jf-analytics-overview__lastyear {
+  font-size: var(--font-size-label-sm);
+  font-weight: var(--font-weight-regular);
+  color: var(--fg-secondary);
+}

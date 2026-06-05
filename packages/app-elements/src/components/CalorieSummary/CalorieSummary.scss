@@ -1,0 +1,125 @@
+// ============================================
+// JotForm Apps - CalorieSummary Component
+// ============================================
+
+.jf-calorie-summary {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  font-family: var(--font-family);
+
+  &--selected {
+    outline: 2px solid var(--border-info);
+    outline-offset: 4px;
+    border-radius: var(--radius-lg);
+  }
+}
+
+// ---- Hero (Today stat) ----
+.jf-calorie-summary__hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: color-mix(in srgb, var(--bg-fill-brand) 12%, var(--bg-fill));
+  border-radius: var(--radius-lg);
+  color: var(--bg-fill-brand);
+}
+
+.jf-calorie-summary__hero-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--font-size-label-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+}
+
+.jf-calorie-summary__big-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.jf-calorie-summary__consumed {
+  font-size: 36px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.1;
+}
+
+.jf-calorie-summary__target {
+  font-size: var(--font-size-paragraph-md);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.4;
+}
+
+.jf-calorie-summary__track {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-fill);
+  border-radius: var(--radius-rounded);
+  overflow: hidden;
+}
+
+.jf-calorie-summary__fill {
+  height: 100%;
+  background: var(--bg-fill-brand);
+  border-radius: var(--radius-rounded);
+  transition: width 300ms ease;
+}
+
+.jf-calorie-summary__remaining {
+  font-size: var(--font-size-paragraph-sm);
+  font-weight: var(--font-weight-regular);
+}
+
+// ---- Macros row ----
+.jf-calorie-summary__macros {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.jf-calorie-summary__macro {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-3);
+  background: color-mix(in srgb, var(--bg-fill-brand) 12%, var(--bg-fill));
+  border-radius: var(--radius-md);
+}
+
+.jf-calorie-summary__macro-label {
+  font-size: var(--font-size-label-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--fg-secondary);
+}
+
+.jf-calorie-summary__macro-value {
+  font-size: var(--font-size-paragraph-md);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  color: var(--fg-primary);
+}
+
+.jf-calorie-summary__macro-of {
+  font-size: var(--font-size-label-sm);
+  font-weight: var(--font-weight-regular);
+  color: var(--fg-secondary);
+}
+
+.jf-calorie-summary__macro-track {
+  width: 100%;
+  height: 4px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-rounded);
+  overflow: hidden;
+}
+
+.jf-calorie-summary__macro-fill {
+  height: 100%;
+  background: var(--bg-fill-brand);
+  border-radius: var(--radius-rounded);
+  transition: width 300ms ease;
+}

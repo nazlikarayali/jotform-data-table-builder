@@ -1,0 +1,424 @@
+// ============================================
+// JotForm Apps - Yoga Studio Widget
+// ============================================
+
+.jf-yoga {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+  padding: var(--space-3, 12px);
+  background: var(--bg-surface, #FFFFFF);
+  border-radius: var(--radius-lg, 12px);
+  font-family: var(--font-family, 'Inter', -apple-system, sans-serif);
+  color: var(--fg-primary, #091141);
+
+  &--selected {
+    outline: 2px solid var(--border-info, #0385C8);
+    outline-offset: 4px;
+  }
+}
+
+.jf-yoga__title {
+  margin: 0;
+  font-size: var(--font-size-label-lg, 18px);
+  line-height: var(--line-height-label-lg, 24px);
+  font-weight: var(--font-weight-bold, 600);
+  color: var(--fg-primary, #091141);
+}
+
+// --- Search row -----------------------------
+.jf-yoga__search-row {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2, 8px);
+}
+
+.jf-yoga__search {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 var(--space-3, 12px);
+  border: 1px solid var(--border, #DADEF3);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-surface, #FFFFFF);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: var(--fg-brand, #7D38EF);
+    box-shadow: 0 0 0 3px rgba(125, 56, 239, 0.15);
+  }
+}
+
+.jf-yoga__search-icon {
+  margin-right: var(--space-2, 8px);
+  color: var(--fg-brand, #7D38EF);
+  flex-shrink: 0;
+}
+
+.jf-yoga__search-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--font-family);
+  font-size: var(--font-size-paragraph-md, 14px);
+  line-height: var(--line-height-paragraph-md, 20px);
+  color: var(--fg-primary, #091141);
+
+  &::placeholder { color: var(--fg-disabled, #979DC6); }
+}
+
+.jf-yoga__search-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: var(--space-2, 8px);
+  border: none;
+  border-radius: var(--radius-rounded, 9999px);
+  background: var(--bg-fill-disabled, #F3F3FE);
+  color: var(--fg-secondary, #353C6A);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--bg-surface-brand, #EDE8FE);
+    color: var(--fg-brand, #7D38EF);
+  }
+}
+
+.jf-yoga__filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  height: 44px;
+  padding: 0 var(--space-4, 16px);
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-fill-brand, #7D38EF);
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-md, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--fg-inverse, #FFFFFF);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover { background: var(--bg-fill-brand-hover, #6420C9); }
+  &--open { background: var(--bg-fill-brand-hover, #6420C9); }
+}
+
+.jf-yoga__filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-rounded, 9999px);
+  background: rgba(255, 255, 255, 0.25);
+  color: var(--fg-inverse, #FFFFFF);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold, 600);
+  line-height: 1;
+}
+
+// --- Active chips row -----------------------
+.jf-yoga__chip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3, 12px);
+}
+
+.jf-yoga__active-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 8px);
+  flex: 1;
+}
+
+.jf-yoga__active-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 var(--space-2, 8px) 0 var(--space-3, 12px);
+  border: none;
+  border-radius: var(--radius-rounded, 9999px);
+  background: var(--bg-surface-brand, #EDE8FE);
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-sm, 13px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--fg-brand, #7D38EF);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover { background: var(--bg-surface-brand-hover, #DDC8FF); }
+}
+
+.jf-yoga__clear-btn {
+  flex-shrink: 0;
+  height: 28px;
+  padding: 0 var(--space-3, 12px);
+  border: 1px solid var(--border, #DADEF3);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-surface, #FFFFFF);
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-sm, 13px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--fg-secondary, #353C6A);
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--fg-brand, #7D38EF);
+    color: var(--fg-brand, #7D38EF);
+  }
+
+  &:disabled { color: var(--fg-disabled, #979DC6); cursor: not-allowed; }
+}
+
+// --- Filters drawer -------------------------
+.jf-yoga__filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+  padding: var(--space-3, 12px);
+  border: 1px dashed var(--border, #DADEF3);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-surface, #FFFFFF);
+}
+
+.jf-yoga__filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+}
+
+.jf-yoga__filter-label {
+  font-size: var(--font-size-label-md, 14px);
+  line-height: var(--line-height-label-md, 20px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--fg-secondary, #353C6A);
+}
+
+.jf-yoga__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 8px);
+}
+
+.jf-yoga__chip {
+  height: 30px;
+  padding: 0 var(--space-3, 12px);
+  border: 1px solid var(--border, #DADEF3);
+  border-radius: var(--radius-rounded, 9999px);
+  background: var(--bg-surface, #FFFFFF);
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-sm, 13px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--fg-secondary, #353C6A);
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: var(--fg-brand, #7D38EF);
+    color: var(--fg-brand, #7D38EF);
+  }
+
+  &--active {
+    background: var(--bg-surface-brand, #EDE8FE);
+    border-color: var(--fg-brand, #7D38EF);
+    color: var(--fg-brand, #7D38EF);
+  }
+}
+
+// --- Count + empty --------------------------
+.jf-yoga__count-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-1, 4px);
+}
+
+.jf-yoga__count {
+  font-size: var(--font-size-label-sm, 13px);
+  line-height: var(--line-height-label-sm, 18px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--fg-secondary, #353C6A);
+}
+
+.jf-yoga__empty {
+  padding: var(--space-6, 24px) var(--space-4, 16px);
+  border: 1px dashed var(--border, #DADEF3);
+  border-radius: var(--radius-md, 8px);
+  text-align: center;
+  color: var(--fg-disabled, #979DC6);
+  font-size: var(--font-size-paragraph-sm, 14px);
+}
+
+// --- Grid + cards ---------------------------
+.jf-yoga__grid {
+  display: grid;
+  gap: var(--space-3, 12px);
+  grid-template-columns: repeat(var(--yoga-cols, 1), minmax(0, 1fr));
+}
+
+.jf-yoga--cols-1 { --yoga-cols: 1; }
+.jf-yoga--cols-2 { --yoga-cols: 2; }
+
+.jf-yoga__card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface, #FFFFFF);
+  border: 1px solid var(--border, #DADEF3);
+  border-radius: var(--radius-lg, 12px);
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+
+  &:hover { border-color: var(--border-secondary, #C8CEED); }
+}
+
+.jf-yoga__card-image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--bg-fill-disabled, #F3F3FE);
+}
+
+.jf-yoga__card-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.jf-yoga__avail {
+  position: absolute;
+  top: var(--space-2, 8px);
+  left: var(--space-2, 8px);
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 var(--space-2, 8px);
+  border-radius: var(--radius-rounded, 9999px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-sm, 12px);
+  line-height: 1;
+  font-weight: var(--font-weight-medium, 500);
+  backdrop-filter: blur(4px);
+
+  &--success { background: var(--bg-surface-success, #DDFBE8); color: var(--fg-success, #19A44B); }
+  &--warning { background: var(--bg-surface-warning, #FEF3C5); color: var(--fg-warning, #DC7801); }
+  &--neutral { background: var(--bg-surface-neutral, #DADEF3); color: var(--fg-secondary, #353C6A); }
+}
+
+.jf-yoga__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+  padding: var(--space-3, 12px);
+}
+
+.jf-yoga__card-title {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-lg, 16px);
+  line-height: var(--line-height-label-lg, 24px);
+  font-weight: var(--font-weight-bold, 600);
+  color: var(--fg-primary, #091141);
+}
+
+.jf-yoga__tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 8px);
+}
+
+.jf-yoga__tag {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 var(--space-2, 8px);
+  border-radius: var(--radius-rounded, 9999px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-sm, 12px);
+  line-height: 1;
+  font-weight: var(--font-weight-medium, 500);
+
+  &--neutral { background: var(--bg-surface-neutral, #DADEF3); color: var(--fg-secondary, #353C6A); }
+  &--brand { background: var(--bg-surface-brand, #EDE8FE); color: var(--fg-brand, #7D38EF); }
+}
+
+.jf-yoga__meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3, 12px);
+}
+
+.jf-yoga__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-label-sm, 13px);
+  line-height: var(--line-height-label-sm, 18px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--fg-secondary, #353C6A);
+
+  svg { color: var(--fg-brand, #7D38EF); }
+}
+
+.jf-yoga__schedule {
+  font-size: var(--font-size-label-sm, 13px);
+  line-height: var(--line-height-label-sm, 18px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--fg-primary, #091141);
+}
+
+.jf-yoga__card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-1, 4px);
+}
+
+.jf-yoga__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--fg-warning, #F4B400);
+}
+
+.jf-yoga__rating-value {
+  font-size: var(--font-size-label-sm, 13px);
+  line-height: var(--line-height-label-sm, 18px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--fg-secondary, #353C6A);
+}
+
+.jf-yoga__book-btn {
+  height: 32px;
+  padding: 0 var(--space-3, 12px);
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-fill-brand, #7D38EF);
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-sm, 13px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--fg-inverse, #FFFFFF);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover:not(:disabled) { background: var(--bg-fill-brand-hover, #6420C9); }
+  &:disabled { background: var(--bg-fill-brand-disabled, #C8B4F1); cursor: not-allowed; }
+}

@@ -1,0 +1,70 @@
+// ============================================
+// JotForm Apps - Image Gallery Component
+// ============================================
+
+.jf-gallery {
+  background: var(--bg-fill);
+  width: 100%;
+  max-width: 100%;
+  padding: var(--space-1);
+  display: grid;
+  gap: var(--space-3);
+  aspect-ratio: 1 / 1;
+
+  &--selected {
+    outline: 2px solid var(--border-info);
+    outline-offset: 4px;
+  }
+
+  &--shrinked {
+    width: 300px;
+  }
+}
+
+.jf-gallery__cell {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--bg-fill-hover);
+}
+
+.jf-gallery__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+// =========================================
+// Uploader (empty state)
+// =========================================
+.jf-gallery-uploader {
+  background: var(--bg-fill);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-family);
+  width: 100%;
+  max-width: 100%;
+  min-height: 160px;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.jf-gallery-uploader__icon {
+  color: var(--fg-tertiary);
+}
+
+.jf-gallery-uploader__hint {
+  font-size: var(--font-size-label-sm);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.5px;
+  color: var(--fg-tertiary);
+  text-transform: uppercase;
+}

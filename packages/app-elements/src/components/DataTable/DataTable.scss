@@ -1,0 +1,239 @@
+// ============================================
+// JotForm Apps — Data Table
+// Mirrors Figma component "Table" set (file cA6sGNSqdI7H5LPfZUvnvC, node 29:5424).
+// All colors bound to app-elements tokens. State variants: Default / Loading /
+// Pagination / Striped.
+// ============================================
+
+.jf-data-table {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-family);
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+// ---- Right-edge fade (when columns overflow horizontally) ----
+.jf-data-table__overflow-fade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 100%;
+  background: linear-gradient(to right, transparent, var(--bg-surface));
+  pointer-events: none;
+  border-top-right-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+}
+
+// ---- Header row ----
+.jf-data-table__header {
+  display: flex;
+  background: var(--bg-fill-hover);
+  border-bottom: 1px solid var(--border);
+  min-height: 48px;
+}
+
+// ---- Body row ----
+.jf-data-table__row {
+  display: flex;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  min-height: 48px;
+
+  &--striped {
+    background: var(--bg-fill-hover);
+  }
+
+  &--last {
+    border-bottom: none;
+  }
+}
+
+// ---- Sticky header — pins the column row at the top during scroll ----
+.jf-data-table--sticky-header {
+  // Container needs to allow internal scroll; consumer wraps the table in a
+  // max-height container. The header itself becomes a sticky positioning
+  // context relative to that scroller.
+  .jf-data-table__header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+}
+
+// ---- Size variants — only body row height changes; header + footer stay 48px. ----
+.jf-data-table--size-small {
+  .jf-data-table__row { min-height: 40px; }
+}
+
+.jf-data-table--size-large {
+  .jf-data-table__row { min-height: 56px; }
+}
+
+// ---- Cell ----
+.jf-data-table__cell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-4);
+  min-width: 0;
+
+  &--header {
+    height: 48px;
+  }
+}
+
+// ---- Header label ----
+.jf-data-table__header-label {
+  font-size: var(--font-size-paragraph-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--fg-primary);
+  line-height: var(--line-height-label-md);
+  letter-spacing: 0.4px;
+}
+
+// ---- Sort indicator (arrow next to the currently-sorted header label) ----
+.jf-data-table__sort-indicator {
+  margin-left: var(--space-1);
+  color: var(--fg-secondary);
+  flex-shrink: 0;
+}
+
+.jf-data-table__cell--header {
+  gap: var(--space-1);
+}
+
+// ---- Body text ----
+.jf-data-table__row-text {
+  font-size: var(--font-size-paragraph-sm);
+  font-weight: var(--font-weight-regular);
+  color: var(--fg-secondary);
+  line-height: var(--line-height-label-md);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &--muted {
+    color: var(--fg-tertiary);
+  }
+}
+
+// ---- Image cell (real) ----
+.jf-data-table__image {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+// ---- Image cell placeholder ----
+.jf-data-table__image-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-tertiary);
+  flex-shrink: 0;
+
+  svg {
+    display: block;
+  }
+}
+
+// ---- Skeleton bone ----
+.jf-data-table__bone {
+  height: 12px;
+  background: var(--bg-fill-active);
+  border-radius: 9999px;
+
+  &--header {
+    height: 10px;
+  }
+}
+
+// ---- Footer (Pagination state) ----
+.jf-data-table__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-fill-hover);
+  border-top: 1px solid var(--border);
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  gap: var(--space-4);
+}
+
+.jf-data-table__footer-counter {
+  font-size: var(--font-size-paragraph-sm);
+  color: var(--fg-tertiary);
+}
+
+.jf-data-table__pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.jf-data-table__nav {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--fg-secondary);
+  cursor: pointer;
+  transition: color 150ms ease, background 150ms ease;
+
+  &:hover:not(:disabled) {
+    color: var(--fg-primary);
+  }
+
+  &:disabled {
+    color: var(--fg-disabled);
+    cursor: not-allowed;
+  }
+}
+
+.jf-data-table__page {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  font-family: inherit;
+  font-size: var(--font-size-paragraph-sm);
+  color: var(--fg-secondary);
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease;
+
+  &:hover:not(.jf-data-table__page--selected) {
+    border-color: var(--border-hover);
+    color: var(--fg-primary);
+  }
+
+  &--selected {
+    font-weight: var(--font-weight-bold);
+    color: var(--fg-primary);
+  }
+}
