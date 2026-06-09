@@ -5198,17 +5198,30 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
                             showDescription
                             showHelpText={false}
                           >
-                            <Segmented
-                              accent="apps"
-                              variant="text"
-                              value={String(selectedElement.properties['Layout'] ?? 'Table')}
-                              onChange={(val) => handlePropertyChange(selectedElement.id, 'Layout', val)}
-                              items={[
-                                { value: 'Basic', label: 'Basic' },
-                                { value: 'Card', label: 'Card' },
-                                { value: 'Table', label: 'Table' },
-                              ]}
-                            />
+                            {(() => {
+                              const layoutOptions = [
+                                { value: 'Basic', icon: 'list-bullet', iconCat: 'editor' },
+                                { value: 'Card', icon: 'grid-2-filled', iconCat: 'layout' },
+                                { value: 'Table', icon: 'table', iconCat: 'general' },
+                              ] as const
+                              const currentLayout = String(selectedElement.properties['Layout'] ?? 'Table')
+                              return (
+                                <div className="layout-picker">
+                                  {layoutOptions.map((opt) => (
+                                    <button
+                                      key={opt.value}
+                                      type="button"
+                                      className={`layout-picker__btn${currentLayout === opt.value ? ' layout-picker__btn--selected' : ''}`}
+                                      onClick={() => handlePropertyChange(selectedElement.id, 'Layout', opt.value)}
+                                      aria-pressed={currentLayout === opt.value}
+                                    >
+                                      <Icon name={opt.icon} category={opt.iconCat} size={20} />
+                                      <span>{opt.value}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              )
+                            })()}
                           </DSFormField>
                         </div>
                         <div className="property-panel__field">
