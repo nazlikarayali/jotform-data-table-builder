@@ -24,7 +24,7 @@ import {
   type StateValues,
   HsvColorPicker,
 } from '@jf/app-elements'
-import { Icon, Button as DSButton, SearchInput, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput } from '@jf/design-system'
+import { Icon, Button as DSButton, SearchInput, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput, Checkbox as DSCheckbox } from '@jf/design-system'
 import phoneHomeIndicator from '@jf/design-system/src/assets/phone-home-indicator.svg'
 import previewUserAvatar from '../assets/preview-user-avatar.jpg'
 import { PhoneStatusBar } from '../components/PhoneStatusBar'
@@ -1878,6 +1878,12 @@ function ItemsPerPageInput({
   )
 }
 
+const COMMON_COLUMN_FIELDS = [
+  'Title', 'Description', 'Image', 'Date', 'Status',
+  'Category', 'Price', 'Quantity', 'Email', 'Phone',
+  'Address', 'Notes',
+] as const
+
 function DataTableColumnsPicker({
   cols,
   onChange,
@@ -1890,9 +1896,49 @@ function DataTableColumnsPicker({
   // index — no live `insertAt` state that can desync from the DOM.
   const [dragSrc, setDragSrc] = useState<number | null>(null)
   const [dragOver, setDragOver] = useState<number | null>(null)
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const [pendingPicks, setPendingPicks] = useState<Set<string>>(() => new Set())
+  const [pickerQuery, setPickerQuery] = useState('')
+  const pickerWrapRef = useRef<HTMLDivElement | null>(null)
 
   const removeAt = (idx: number) => onChange(cols.filter((_, i) => i !== idx))
-  const addColumn = () => onChange([...cols, `Column ${cols.length + 1}`])
+
+  const colsSet = new Set(cols)
+  const availableFields = COMMON_COLUMN_FIELDS.filter((f) => !colsSet.has(f))
+  const filteredAvailable = pickerQuery.trim()
+    ? availableFields.filter((f) => f.toLowerCase().includes(pickerQuery.trim().toLowerCase()))
+    : availableFields
+
+  const togglePick = (field: string) => {
+    setPendingPicks((prev) => {
+      const next = new Set(prev)
+      if (next.has(field)) next.delete(field)
+      else next.add(field)
+      return next
+    })
+  }
+
+  const closePicker = () => {
+    setPickerOpen(false)
+    setPendingPicks(new Set())
+    setPickerQuery('')
+  }
+
+  const applyPicks = () => {
+    if (pendingPicks.size === 0) return
+    onChange([...cols, ...Array.from(pendingPicks)])
+    closePicker()
+  }
+
+  useEffect(() => {
+    if (!pickerOpen) return
+    const handleClick = (e: MouseEvent) => {
+      if (!pickerWrapRef.current) return
+      if (!pickerWrapRef.current.contains(e.target as Node)) closePicker()
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [pickerOpen])
 
   const moveRow = (from: number, to: number) => {
     if (from === to || from < 0 || from >= cols.length || to < 0 || to >= cols.length) return
@@ -1969,10 +2015,56 @@ function DataTableColumnsPicker({
           </div>
         )
       })}
-      <button type="button" className="data-table-columns__add" onClick={addColumn}>
-        <Icon name="plus-circle" category="general" size={20} />
-        <span>Add Column</span>
-      </button>
+      <div className="data-table-columns__add-wrap" ref={pickerWrapRef}>
+        <button
+          type="button"
+          className={`data-table-columns__add${pickerOpen ? ' is-open' : ''}`}
+          onClick={() => (pickerOpen ? closePicker() : setPickerOpen(true))}
+          aria-expanded={pickerOpen}
+          aria-haspopup="listbox"
+        >
+          <Icon name="plus-circle" category="general" size={20} />
+          <span>Add Column</span>
+        </button>
+        {pickerOpen && (
+          <div className="data-table-columns__picker" role="listbox" aria-label="Choose fields to add">
+            <div className="data-table-columns__picker-search">
+              <Icon name="magnifying-glass" category="general" size={16} />
+              <input
+                type="text"
+                className="data-table-columns__picker-search-input"
+                placeholder="Search fields"
+                value={pickerQuery}
+                onChange={(e) => setPickerQuery(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="data-table-columns__picker-divider" />
+            <div className="data-table-columns__picker-list">
+              {filteredAvailable.map((field) => (
+                <div key={field} className="data-table-columns__picker-row">
+                  <DSCheckbox
+                    label={field}
+                    checked={pendingPicks.has(field)}
+                    onChange={() => togglePick(field)}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="data-table-columns__picker-divider" />
+            <div className="data-table-columns__picker-footer">
+              <button
+                type="button"
+                className="data-table-columns__picker-btn"
+                onClick={applyPicks}
+                disabled={pendingPicks.size === 0}
+              >
+                {pendingPicks.size > 0 ? `Add (${pendingPicks.size})` : 'Add'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
