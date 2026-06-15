@@ -5,7 +5,6 @@ import { TopBar } from './shell/TopBar.tsx'
 import { BuildPage } from './pages/BuildPage.tsx'
 import { SettingsPage } from './pages/SettingsPage.tsx'
 import { PublishPage } from './pages/PublishPage.tsx'
-import { VisibleAIOverlay } from './components/VisibleAIOverlay.tsx'
 import { APP_PRESETS, EMPTY_PRESET_ID, getPresetById } from './presets/appPresets.ts'
 import { loadStoredAppTitle } from './presets/storage.ts'
 
@@ -117,7 +116,6 @@ export function App() {
         {activePage === 'settings' && <SettingsPage presetId={activePresetId} appTitle={appTitle} />}
         {activePage === 'publish' && <PublishPage />}
       </div>
-      {activePage === 'build' && <VisibleAIOverlay />}
     </div>
     <Agentation />
     </IconLibraryProvider>
