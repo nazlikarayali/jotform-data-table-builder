@@ -50,6 +50,243 @@ export const APP_PRESETS: AppPreset[] = [
         icon: 'House',
         elements: [
           { componentId: 'data-table' },
+          { componentId: 'list' },
+        ],
+      },
+    ],
+    headerActions: [],
+  },
+  {
+    id: 'pet-hotel',
+    name: 'Pet Hotel',
+    appTitle: 'PawSuite',
+    appSubtitle: 'Pet Hotel & Care',
+    appHeader: {
+      layout: 'Left',
+      imageStyle: 'Icon',
+      icon: 'PawPrint',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=900&h=300&fit=crop',
+      backgroundImageName: 'pawsuite-banner.jpg',
+    },
+    pages: [
+      {
+        id: 'page-1',
+        name: 'Home',
+        icon: 'House',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Center' },
+            properties: {
+              Heading: 'Welcome to PawSuite',
+              Subheading: 'Cozy boarding & loving care for your best friend.',
+            },
+          },
+          {
+            componentId: 'image',
+            variants: { 'Has Image': 'Yes', Alignment: 'Center', Size: 'Large' },
+            properties: {
+              'Image URL': 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=900&h=480&fit=crop',
+              'Alt Text': 'Two happy dogs at the pet hotel',
+            },
+          },
+          {
+            componentId: 'paragraph',
+            variants: { Size: 'Medium', Alignment: 'Center' },
+            properties: {
+              Text: 'At PawSuite your pet enjoys a home away from home — spacious suites, daily walks, and round-the-clock love from our caring team.',
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Medium', Alignment: 'Left' },
+            properties: { Heading: 'Why PawSuite', Subheading: 'Everything your best friend needs.' },
+          },
+          {
+            componentId: 'list',
+            variants: { Layout: 'Basic', 'Image Style': 'None', Size: 'Regular', Action: 'None' },
+            properties: {
+              'Show Header': false,
+              Items: JSON.stringify([
+                { title: '24/7 Care', description: 'Our team is on-site day and night.' },
+                { title: 'Spacious Suites', description: 'Comfy private rooms for every size.' },
+                { title: 'Daily Walks & Play', description: 'Outdoor adventures and playtime.' },
+                { title: 'Grooming & Spa', description: 'Baths, trims, and pampering.' },
+              ]),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'testimonial',
+            properties: { 'Show Avatars': true },
+          },
+        ],
+      },
+      {
+        id: 'page-2',
+        name: 'Guests',
+        icon: 'PawPrint',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: 'Pets staying with us', Subheading: "Meet today's happy guests." },
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Basic',
+              'Image Style': 'Square',
+              Size: 'Regular',
+              Action: 'Button',
+            },
+            properties: {
+              'Show Header': false,
+              'Button Label': 'View profile',
+              Items: JSON.stringify([
+                { title: 'Bella', badges: [{ label: 'Golden Retriever', color: '#B5A333', bg: '#F4F2E5' }], fields: { breed: 'Golden Retriever', room: 'Room 4', dropoff: 'Until Jun 18' }, description: '3 yrs · Room 4', image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=400&fit=crop' },
+                { title: 'Max', badges: [{ label: 'Pembroke Corgi', color: '#29BCAA', bg: '#E5F6F3' }], fields: { breed: 'Pembroke Corgi', room: 'Room 7', dropoff: 'Until Jun 16' }, description: '2 yrs · Room 7', image: 'https://images.unsplash.com/photo-1503256207526-0d5d80fa2f47?w=400&h=400&fit=crop' },
+                { title: 'Luna', badges: [{ label: 'British Shorthair', color: '#068CE0', bg: '#E1F0F8' }], fields: { breed: 'British Shorthair', room: 'Suite 2', dropoff: 'Until Jun 20' }, description: '4 yrs · Suite 2', image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=400&fit=crop' },
+                { title: 'Charlie', badges: [{ label: 'Pug', color: '#60C421', bg: '#EAF6E5' }], fields: { breed: 'Pug', room: 'Room 9', dropoff: 'Until Jun 15' }, description: '5 yrs · Room 9', image: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400&h=400&fit=crop' },
+                { title: 'Milo', badges: [{ label: 'Tabby Cat', color: '#60C421', bg: '#EAF6E5' }], fields: { breed: 'Tabby Cat', room: 'Suite 1', dropoff: 'Until Jun 22' }, description: '1 yr · Suite 1', image: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=400&fit=crop' },
+                { title: 'Rocky', badges: [{ label: 'Siberian Husky', color: '#29BCAA', bg: '#E5F6F3' }], fields: { breed: 'Siberian Husky', room: 'Room 12', dropoff: 'Until Jun 19' }, description: '3 yrs · Room 12', image: 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&h=400&fit=crop' },
+              ]),
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-3',
+        name: 'Check-ins',
+        icon: 'CalendarCheck',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: "Today's check-ins", Subheading: 'Arrivals and departures for today.' },
+          },
+          {
+            componentId: 'data-table',
+            variants: { State: 'Default' },
+            properties: {
+              Columns: JSON.stringify(['Pet', 'Breed', 'Room', 'Status']),
+              Rows: JSON.stringify([
+                { Pet: 'Bella', Breed: 'Golden Retriever', Room: 'Room 4', Status: 'Checked in' },
+                { Pet: 'Max', Breed: 'Pembroke Corgi', Room: 'Room 7', Status: 'Arriving 2:00 PM' },
+                { Pet: 'Luna', Breed: 'British Shorthair', Room: 'Suite 2', Status: 'Checked in' },
+                { Pet: 'Charlie', Breed: 'Pug', Room: 'Room 9', Status: 'Departing 11:00 AM' },
+                { Pet: 'Milo', Breed: 'Tabby Cat', Room: 'Suite 1', Status: 'Arriving 4:30 PM' },
+                { Pet: 'Daisy', Breed: 'Beagle', Room: 'Room 5', Status: 'Checked in' },
+              ]),
+              Size: 'Medium',
+              'Show Header': true,
+              'Show Pagination': false,
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 16 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Medium', Alignment: 'Left' },
+            properties: { Heading: 'Arriving soon', Subheading: 'Next pets to check in.' },
+          },
+          {
+            componentId: 'list',
+            variants: { Layout: 'Basic', 'Image Style': 'Square', Size: 'Regular', Action: 'None' },
+            properties: {
+              'Show Header': false,
+              Items: JSON.stringify([
+                { title: 'Daisy — Jun 15, 2:00 PM', description: 'Beagle · Room 5', image: 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=200&h=200&fit=crop' },
+                { title: 'Oliver — Jun 16, 10:00 AM', description: 'Maine Coon · Suite 3', image: 'https://images.unsplash.com/photo-1492370284958-c20b15c692d2?w=200&h=200&fit=crop' },
+                { title: 'Buddy — Jun 16, 4:30 PM', description: 'Labrador · Room 8', image: 'https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=200&h=200&fit=crop' },
+              ]),
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-4',
+        name: 'Reservations',
+        icon: 'Calendar',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: 'Reservations', Subheading: 'Current and upcoming stays.' },
+          },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Default' },
+            properties: { Label: 'New booking', 'Left Icon': 'Plus', 'Full Width': true },
+          },
+          { componentId: 'spacer', properties: { Height: 12 } },
+          {
+            componentId: 'data-table',
+            variants: { State: 'Pagination' },
+            properties: {
+              Columns: JSON.stringify(['Pet', 'Owner', 'Check-in', 'Check-out', 'Room', 'Status']),
+              Size: 'Medium',
+              'Show Header': true,
+              'Show Pagination': true,
+              'Striped Rows': true,
+              'Items per page': 6,
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-5',
+        name: 'Book',
+        icon: 'ClipboardList',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Center' },
+            properties: { Heading: 'Book a Stay', Subheading: 'Reserve a cozy room for your pet.' },
+          },
+          {
+            componentId: 'form',
+            variants: { 'Layout Type': 'Form' },
+            properties: { 'Show Border': true },
+          },
+          { componentId: 'spacer', properties: { Height: 12 } },
+          {
+            componentId: 'paragraph',
+            variants: { Size: 'Small', Alignment: 'Left' },
+            properties: {
+              Text: 'Check-in is from 8 AM and check-out by 11 AM. Please bring vaccination records and your pet’s favorite food. Cancellations are free up to 48 hours before arrival.',
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-6',
+        name: 'Staff',
+        icon: 'Stethoscope',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Center' },
+            properties: { Heading: 'Meet the Team', Subheading: 'The humans who love your pets.' },
+          },
+          {
+            componentId: 'list',
+            variants: { Layout: 'Basic', 'Image Style': 'Circle', Size: 'Regular', Action: 'None' },
+            properties: {
+              'Show Header': false,
+              Items: JSON.stringify([
+                { title: 'Dr. Maya Chen', description: 'Lead Veterinarian', image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&h=200&fit=crop' },
+                { title: 'James Park', description: 'Head Groomer', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop' },
+                { title: 'Sofia Reyes', description: 'Pet Caretaker', image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=200&h=200&fit=crop' },
+                { title: 'Liam O’Brien', description: 'Overnight Caretaker', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop' },
+              ]),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 16 } },
+          {
+            componentId: 'testimonial',
+            properties: { 'Show Avatars': true },
+          },
         ],
       },
     ],

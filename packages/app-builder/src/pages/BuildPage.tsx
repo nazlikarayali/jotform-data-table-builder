@@ -57,6 +57,7 @@ import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/eleme
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element'
 import type { AppPreset, PresetElement } from '../presets/appPresets'
 import { IconPropertyField } from '../components/IconPropertyField'
+import { RichTextField } from '../components/RichTextField'
 import { ColorInputWithPicker } from '../components/ColorInputWithPicker'
 import { loadSnapshot, saveSnapshot } from '../presets/storage'
 
@@ -340,8 +341,8 @@ function buildInitialStateFromPreset(preset: AppPreset | undefined): {
       appHeader: { ...APP_HEADER_DEFAULTS },
     }
   }
-  // Empty App always starts from defaults — skip stored snapshot.
-  const stored = preset.id === 'empty' ? null : loadSnapshot(preset.id)
+  // Empty App and the Pet Hotel demo always start from defaults — skip stored snapshot.
+  const stored = preset.id === 'empty' || preset.id === 'pet-hotel' ? null : loadSnapshot(preset.id)
   if (stored) {
     const pages = stored.pages as AppPage[]
     const storedHeader = (stored.appHeader ?? {}) as Partial<AppHeaderState>
@@ -5112,7 +5113,30 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
                           return (
                             <>
                               {renderComposerRow('Title', 'Field Title', 'Title')}
-                              {renderComposerRow('Description', 'Field Description', 'Description')}
+                              <div className="property-panel__field" key="Field Description">
+                                <DSFormField title="Description" size="md" showDescription={false} showHelpText={false}>
+                                  <RichTextField
+                                    key={selectedElement.id}
+                                    value={String(selectedElement.properties['Field Description'] ?? '')}
+                                    onChange={(html) => handlePropertyChange(selectedElement.id, 'Field Description', html)}
+                                    maxLength={240}
+                                    placeholder="Type a description…"
+                                    fields={[
+                                      { value: 'name', label: 'Name', kind: 'text' },
+                                      { value: 'breed', label: 'Breed', kind: 'tag' },
+                                      { value: 'room', label: 'Room', kind: 'text' },
+                                      { value: 'dropoff', label: 'Drop-off Date', kind: 'date' },
+                                      { value: 'pickup', label: 'Pick-up Date', kind: 'date' },
+                                      { value: 'notes', label: 'Notes', kind: 'text' },
+                                    ]}
+                                    seedFields={[
+                                      { value: 'breed', label: 'Breed', kind: 'tag' },
+                                      { value: 'room', label: 'Room', kind: 'text' },
+                                      { value: 'dropoff', label: 'Drop-off Date', kind: 'date' },
+                                    ]}
+                                  />
+                                </DSFormField>
+                              </div>
                               {renderMapperRow('Image', 'Field Image', 'Image')}
                             </>
                           )
@@ -5690,14 +5714,11 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
                         </div>
                         <div className="property-panel__field">
                           <DSFormField title="Description" size="md" showDescription={false} showHelpText={false}>
-                            <DSTextArea
-                              size="md"
-                              maxLength={240}
-                              showCount
-                              showDrag={false}
-                              placeholder="Add description"
+                            <RichTextField
                               value={String(selectedElement.properties['Description'] ?? '')}
-                              onChange={(e) => handlePropertyChange(selectedElement.id, 'Description', e.target.value)}
+                              onChange={(html) => handlePropertyChange(selectedElement.id, 'Description', html)}
+                              maxLength={240}
+                              placeholder="Add description"
                             />
                           </DSFormField>
                         </div>

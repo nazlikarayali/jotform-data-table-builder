@@ -1,6 +1,7 @@
 import type React from 'react';
 import { Icon } from '../Icon/Icon';
 import { Button } from '../Button';
+import { FieldBadges, type ListBadge } from '../FieldBadges';
 import './Card.scss';
 
 // ============================================
@@ -20,6 +21,8 @@ export interface CardProps {
   imageUrl?: string;
   title?: string;
   description?: string;
+  /** Multiple-choice field values (e.g. breed) rendered as colored badges next to the description. */
+  badges?: ListBadge[];
   buttonLabel?: string;
   selected?: boolean;
   shrinked?: boolean;
@@ -88,13 +91,19 @@ const CardImage: React.FC<CardImageProps> = ({ imageStyle, layout, iconName, ima
 interface CardContentProps {
   title: string;
   description: string;
+  badges?: string[];
   centered?: boolean;
 }
 
-const CardContent: React.FC<CardContentProps> = ({ title, description, centered }) => (
+const CardContent: React.FC<CardContentProps> = ({ title, description, badges, centered }) => (
   <div className={`jf-card__content${centered ? ' jf-card__content--centered' : ''}`}>
     <div className="jf-card__title">{title}</div>
-    <div className="jf-card__description">{description}</div>
+    <div className="jf-card__meta">
+      <FieldBadges badges={badges} />
+      {badges && badges.length && description ? <span className="jf-field-sep">·</span> : null}
+      {/* Description supports inline rich text (bold/italic/underline) authored in the builder. */}
+      <span className="jf-card__description" dangerouslySetInnerHTML={{ __html: description }} />
+    </div>
   </div>
 );
 
@@ -143,6 +152,7 @@ export const Card: React.FC<CardProps> = ({
   imageUrl,
   title = 'Card Title',
   description = 'Card description',
+  badges,
   buttonLabel = 'Edit',
   selected = false,
   shrinked = false,
@@ -206,7 +216,7 @@ export const Card: React.FC<CardProps> = ({
     return (
       <div className={classes}>
         <CardImage imageStyle={imageStyle} layout={layout} iconName={iconName} imageUrl={imageUrl} />
-        <CardContent title={title} description={description} />
+        <CardContent title={title} description={description} badges={badges} />
         <CardAction action={action} actionIconFilled={actionIconFilled} actionIcon={actionIcon ?? 'ChevronRight'} buttonLabel={buttonLabel} />
       </div>
     );
@@ -218,16 +228,16 @@ export const Card: React.FC<CardProps> = ({
         <CardImage imageStyle={imageStyle} layout={layout} iconName={iconName} imageUrl={imageUrl} />
         {action === 'None' ? (
           <div className="jf-card__body">
-            <CardContent title={title} description={description} />
+            <CardContent title={title} description={description} badges={badges} />
           </div>
         ) : action === 'Icon' ? (
           <div className="jf-card__body jf-card__body--row">
-            <CardContent title={title} description={description} />
+            <CardContent title={title} description={description} badges={badges} />
             <CardAction action={action} actionIconFilled={actionIconFilled} actionIcon={actionIcon ?? 'ChevronRight'} buttonLabel={buttonLabel} />
           </div>
         ) : (
           <div className="jf-card__body">
-            <CardContent title={title} description={description} centered />
+            <CardContent title={title} description={description} badges={badges} centered />
             <CardAction action={action} actionIconFilled={actionIconFilled} actionIcon={actionIcon ?? 'ChevronRight'} buttonLabel={buttonLabel} fullWidth />
           </div>
         )}
@@ -240,17 +250,17 @@ export const Card: React.FC<CardProps> = ({
       <CardImage imageStyle={imageStyle} layout={layout} iconName={iconName} imageUrl={imageUrl} />
       {action === 'Icon' ? (
         <div className="jf-card__body jf-card__body--row">
-          <CardContent title={title} description={description} centered={isCentered} />
+          <CardContent title={title} description={description} badges={badges} centered={isCentered} />
           <CardAction action={action} actionIconFilled={actionIconFilled} actionIcon={actionIcon ?? 'ChevronRight'} buttonLabel={buttonLabel} />
         </div>
       ) : action === 'Button' ? (
         <div className="jf-card__body">
-          <CardContent title={title} description={description} centered={isCentered} />
+          <CardContent title={title} description={description} badges={badges} centered={isCentered} />
           <CardAction action={action} actionIconFilled={actionIconFilled} actionIcon={actionIcon ?? 'ChevronRight'} buttonLabel={buttonLabel} fullWidth />
         </div>
       ) : (
         <div className="jf-card__body">
-          <CardContent title={title} description={description} centered={isCentered} />
+          <CardContent title={title} description={description} badges={badges} centered={isCentered} />
         </div>
       )}
     </div>

@@ -195,3 +195,38 @@
     display: none;
   }
 }
+
+/* Multiple-choice field values (e.g. breed) rendered as badge pills. */
+.jf-field-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 2px;
+}
+.jf-field-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--bg-fill-hover);
+  color: var(--fg-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+/* Badge + description on a single line. */
+.jf-list-item__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.jf-list-item__meta .jf-field-badges { margin: 0; }
+.jf-field-sep { color: var(--fg-secondary); flex-shrink: 0; }
+
+/* Badge tone variants — map multiple-choice option colors to the app color scheme. */
+.jf-field-badge--info    { background: var(--bg-surface-info);    color: var(--fg-info); }
+.jf-field-badge--success { background: var(--bg-surface-success); color: var(--fg-success); }
+.jf-field-badge--warning { background: var(--bg-surface-warning); color: var(--fg-warning); }

@@ -232,7 +232,7 @@ ComponentRegistry.register({
   render(variants: VariantValues, props: PropertyValues, _states: StateValues): React.ReactNode {
     const isCard = variants['Layout'] === 'Card';
 
-    let items: { title: string; description: string; image?: string }[] | undefined;
+    let items: { title: string; description: string; image?: string; badges?: (string | { label: string; color?: string; bg?: string; tone?: string })[] }[] | undefined;
     const itemsRaw = props['Items'];
     if (typeof itemsRaw === 'string' && itemsRaw.startsWith('[')) {
       try {
@@ -241,8 +241,15 @@ ComponentRegistry.register({
       } catch { /* ignore — fall back to defaults */ }
     }
 
+    const fieldDesc = props['Field Description'] as string;
+    const descriptionTemplate =
+      typeof fieldDesc === 'string' && fieldDesc && !(fieldDesc.trim().startsWith('[') && fieldDesc.includes('"type"'))
+        ? fieldDesc
+        : undefined;
+
     return (
       <ListWithSource
+        descriptionTemplate={descriptionTemplate}
         source={(props['Source'] as string) || undefined}
         titleField={(props['Title Field'] as string) || undefined}
         descriptionField={(props['Description Field'] as string) || undefined}

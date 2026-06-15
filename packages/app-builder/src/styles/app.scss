@@ -3198,6 +3198,16 @@ body {
     display: none;
   }
 
+  // In the builder, the rendered app is being edited — not used. Suppress the
+  // interactive hover/active feedback on app controls (buttons, action buttons)
+  // so editing doesn't look like clicking through the live app. The actual
+  // hover states still apply in the live preview (.live-preview), which is a
+  // separate container untouched by this rule.
+  .jf-btn,
+  .jf-card__action-button {
+    pointer-events: none;
+  }
+
   @media (max-width: 768px) {
     overflow-y: visible;
     padding-bottom: max(var(--bottom-sheet-height, 0px), calc(var(--mobile-bottom-bar-height, 0px) + var(--space-2)));
@@ -9442,4 +9452,202 @@ body.builder--phone-only {
   }
 
   .jf-icon { color: currentColor; }
+}
+
+// ── Rich text field (List → Description property) ───────────────────────────
+// Bordered card with a contentEditable area on top and a B/I/U + emoji toolbar
+// with a live character counter along the bottom. Lives in the dark panel.
+.rich-text-field {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--gray-700);
+  border-radius: var(--radius-sm);
+  background: var(--gray-500);
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--gray-300);
+  }
+
+  &:focus-within {
+    border-color: var(--accent-default);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-default) 30%, transparent);
+  }
+
+  &__editor {
+    min-height: 88px;
+    // Caps the writing area so pressing Enter / long text scrolls instead of
+    // pushing the rest of the right-panel properties off-screen.
+    max-height: 300px;
+    overflow-y: auto;
+    padding: var(--spacing-sm);
+    font-family: var(--font-family-circular);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-book);
+    line-height: 1.5;
+    letter-spacing: -0.084px;
+    color: var(--core-white);
+    outline: none;
+    overflow-wrap: anywhere;
+
+    &.is-empty::before {
+      content: attr(data-placeholder);
+      color: var(--secondary-text-light);
+      pointer-events: none;
+      display: block;
+      height: 0;
+    }
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-top: 1px solid var(--gray-700);
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--ds-text-secondary);
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease;
+
+    &:hover {
+      background: var(--gray-600);
+      color: var(--core-white);
+    }
+
+    &.is-active {
+      background: var(--gray-700);
+      color: var(--core-white);
+    }
+  }
+
+  &__divider {
+    width: 1px;
+    height: 18px;
+    margin: 0 var(--spacing-2xs);
+    background: var(--gray-700);
+  }
+
+  // Character counter — its own right-aligned row just above the toolbar.
+  &__count {
+    padding: 0 var(--spacing-sm) var(--spacing-2xs);
+    text-align: right;
+    font-family: var(--font-family-circular);
+    font-size: var(--font-size-xs);
+    color: var(--secondary-text-light);
+
+    &.is-over {
+      color: var(--product-error, #df2125);
+    }
+  }
+
+  // "Add field" button — icon-only, pushed to the right edge of the toolbar.
+  &__add {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--ds-text-secondary);
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease;
+
+    &:hover,
+    &.is-active {
+      background: var(--gray-700);
+      color: var(--core-white);
+    }
+  }
+
+  // Inline field chips inside the editor (DS .jf-field-chip base styles apply;
+  // these add the spacing the composer's --inline rule provides elsewhere).
+  &__editor .jf-field-chip {
+    margin: 0 2px;
+    vertical-align: middle;
+    user-select: none;
+  }
+
+  &__sep {
+    color: var(--secondary-text-light);
+  }
+
+  &__field-menu {
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+    padding: var(--spacing-2xs);
+    border: 1px solid var(--gray-700);
+    border-radius: var(--radius-md);
+    background: var(--gray-500);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  &__field-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    height: 36px;
+    padding: 0 var(--spacing-sm);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--core-white);
+    font-family: var(--font-family-circular);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-book);
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--gray-400);
+    }
+  }
+
+  &__emoji-popover {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 2px;
+    padding: var(--spacing-xs);
+    border: 1px solid var(--gray-700);
+    border-radius: var(--radius-md);
+    background: var(--gray-500);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    width: 264px;
+  }
+
+  &__emoji {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    font-size: 18px;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--gray-700);
+    }
+  }
 }

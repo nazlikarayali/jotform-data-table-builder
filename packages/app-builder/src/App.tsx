@@ -10,7 +10,7 @@ import { APP_PRESETS, EMPTY_PRESET_ID, getPresetById } from './presets/appPreset
 import { loadStoredAppTitle } from './presets/storage.ts'
 
 type Page = 'build' | 'settings' | 'publish'
-const DEFAULT_PRESET_ID = EMPTY_PRESET_ID  // Boş başlangıç — Lotus Yoga preset yerine sandbox. Copilot kapalı, AI idle.
+const DEFAULT_PRESET_ID = 'pet-hotel'  // Pet Hotel & Care app açılışta gelir (list + data-table ilgili sayfalarda).
 
 // Subscribe to URL changes — covers history navigation (popstate), fragment
 // updates (hashchange), and tab refocus after a `window.open`/`open` from
@@ -51,9 +51,9 @@ export function App() {
   const [previewMode, setPreviewMode] = useState(false)
   const [activePresetId, setActivePresetId] = useState<string>(urlPreset ?? DEFAULT_PRESET_ID)
   const preset = useMemo(() => getPresetById(activePresetId), [activePresetId])
-  // Empty App is a sandbox — never restore from storage.
+  // Empty App and the Pet Hotel demo are sandboxes — never restore the title from storage.
   const titleForPreset = (id: string) =>
-    id === EMPTY_PRESET_ID ? getPresetById(id).appTitle : (loadStoredAppTitle(id) ?? getPresetById(id).appTitle)
+    id === EMPTY_PRESET_ID || id === 'pet-hotel' ? getPresetById(id).appTitle : (loadStoredAppTitle(id) ?? getPresetById(id).appTitle)
   const [appTitle, setAppTitle] = useState(() => titleForPreset(urlPreset ?? DEFAULT_PRESET_ID))
 
   // Sync activePresetId/appTitle whenever the URL preset changes (capture flow
@@ -73,6 +73,29 @@ export function App() {
     }
   }, [urlFullscreen])
 
+  // Pet Hotel demo uses a warm amber brand accent so the app icon and brand
+  // surfaces (buttons, links) harmonize with the golden header banner. Other
+  // presets fall back to the default brand token.
+  useEffect(() => {
+    const root = document.documentElement
+    if (activePresetId === 'pet-hotel') {
+      root.style.setProperty('--fg-brand', '#C77A2C')
+      root.style.setProperty('--bg-fill-brand', '#C77A2C')
+      // Warm cream app surface under the header so it harmonizes with the
+      // golden banner instead of the default cool lavender (#f3f3fe).
+      root.style.setProperty('--bg-page', '#FBF5EC')
+    } else {
+      root.style.removeProperty('--fg-brand')
+      root.style.removeProperty('--bg-fill-brand')
+      root.style.removeProperty('--bg-page')
+    }
+    return () => {
+      root.style.removeProperty('--fg-brand')
+      root.style.removeProperty('--bg-fill-brand')
+      root.style.removeProperty('--bg-page')
+    }
+  }, [activePresetId])
+
   const handlePresetChange = (id: string) => {
     setActivePresetId(id)
     setAppTitle(titleForPreset(id))
@@ -91,8 +114,8 @@ export function App() {
           if (p.id === activePresetId) {
             return { id: p.id, name: appTitle === p.appTitle ? p.name : appTitle }
           }
-          // Empty App never reads from storage — always show its preset name.
-          if (p.id === EMPTY_PRESET_ID) return { id: p.id, name: p.name }
+          // Empty App and Pet Hotel never read from storage — always show the preset name.
+          if (p.id === EMPTY_PRESET_ID || p.id === 'pet-hotel') return { id: p.id, name: p.name }
           const storedTitle = loadStoredAppTitle(p.id)
           return { id: p.id, name: storedTitle && storedTitle !== p.appTitle ? storedTitle : p.name }
         })}

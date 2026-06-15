@@ -3,6 +3,7 @@ import { Icon } from '../Icon/Icon';
 import { Button } from '../Button';
 import { Card } from '../Card';
 import type { CardImageStyle, CardLayout, CardAction } from '../Card';
+import { FieldBadges, resolveDescription, type ListBadge } from '../FieldBadges';
 import './List.scss';
 
 export type ListImageStyle = 'Square' | 'Circle' | 'None';
@@ -14,6 +15,10 @@ export interface ListItemData {
   title: string;
   description: string;
   image?: string;
+  /** Multiple-choice field values (e.g. breed) rendered as colored badges. */
+  badges?: ListBadge[];
+  /** Per-item field values used to resolve a Description template (e.g. { room, dropoff }). */
+  fields?: Record<string, string>;
 }
 
 export type CardSize = 'Small' | 'Medium' | 'Large';
@@ -41,6 +46,8 @@ export interface ListProps {
   skeletonAnimation?: 'pulse' | 'shimmer';
   selected?: boolean;
   items?: ListItemData[];
+  /** Description template (HTML w/ field chips + literal text) from the panel — resolved per item. */
+  descriptionTemplate?: string;
 }
 
 // ============================================
@@ -107,7 +114,11 @@ const BasicListItem: FC<{
       <div className="jf-list-item__content">
         <div className="jf-list-item__info">
           <div className="jf-list-item__title">{item.title}</div>
-          <div className="jf-list-item__desc">{item.description}</div>
+          <div className="jf-list-item__meta">
+            <FieldBadges badges={item.badges} />
+            {item.badges?.length && item.description ? <span className="jf-field-sep">·</span> : null}
+            <span className="jf-list-item__desc" dangerouslySetInnerHTML={{ __html: item.description }} />
+          </div>
         </div>
         <ListActionEl action={action} actionIconFilled={actionIconFilled} buttonLabel={buttonLabel} />
       </div>
@@ -207,9 +218,19 @@ export const List: FC<ListProps> = ({
   skeleton = false,
   skeletonAnimation = 'pulse',
   selected = false,
-  items = DEFAULT_ITEMS,
+  items: itemsProp = DEFAULT_ITEMS,
+  descriptionTemplate,
 }) => {
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
+
+  const items =
+    typeof descriptionTemplate === 'string' && descriptionTemplate
+      ? itemsProp.map((it) => ({
+          ...it,
+          description: resolveDescription(descriptionTemplate, it.fields, it.badges),
+          badges: undefined,
+        }))
+      : itemsProp;
 
   const header = showHeader ? (
     <div className="jf-list__heading">
@@ -270,6 +291,7 @@ export const List: FC<ListProps> = ({
               imageUrl={item.image}
               title={item.title}
               description={item.description}
+              badges={item.badges}
               buttonLabel={cardButtonLabel}
             />
           ))}

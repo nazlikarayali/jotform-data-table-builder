@@ -11,6 +11,8 @@ interface DataTableWithSourceProps extends ComponentProps<typeof DataTable> {
   titleField?: string;
   descriptionField?: string;
   imageField?: string;
+  /** Inline sample rows (keyed by column name) — used when no data source is connected. */
+  staticRows?: Array<Record<string, unknown>>;
 }
 
 // Fallback total used when there's no real data source connected — keeps
@@ -22,6 +24,7 @@ function DataTableWithSource({
   titleField,
   descriptionField,
   imageField,
+  staticRows,
   rowsPerPage,
   showPagination,
   sortBy,
@@ -39,6 +42,9 @@ function DataTableWithSource({
       Description: descriptionField ? row[descriptionField] : row['description'] || '',
       Image: imageField ? row[imageField] : null,
     }));
+  } else if (staticRows && staticRows.length > 0) {
+    // No live source — render inline sample rows (keyed by column name).
+    dataRows = staticRows;
   }
 
   // Apply sort to real data. Mock placeholder rows have nothing to reorder.
@@ -97,6 +103,7 @@ ComponentRegistry.register({
     { name: 'Description Field', type: 'text', default: '' },
     { name: 'Image Field', type: 'text', default: '' },
     { name: 'Columns', type: 'text', default: '["Title","Description","Image"]' },
+    { name: 'Rows', type: 'text', default: '' },
     { name: 'Layout', type: 'select', options: ['Basic', 'Card', 'Table'], default: 'Table' },
     { name: 'Default Sort', type: 'text', default: '' },
     { name: 'Sort Order', type: 'select', options: ['Ascending', 'Descending'], default: 'Ascending' },
@@ -181,10 +188,19 @@ ComponentRegistry.register({
         if (Array.isArray(parsed)) columns = parsed.map(String);
       } catch { /* fall through to default */ }
     }
+    let staticRows: Array<Record<string, unknown>> | undefined = undefined;
+    const rowsRaw = props['Rows'] as string;
+    if (typeof rowsRaw === 'string' && rowsRaw.trim().startsWith('[')) {
+      try {
+        const parsed = JSON.parse(rowsRaw);
+        if (Array.isArray(parsed) && parsed.length > 0) staticRows = parsed;
+      } catch { /* fall through — no sample rows */ }
+    }
     return (
       <DataTableWithSource
         state={variants['State'] as DataTableState}
         columns={columns}
+        staticRows={staticRows}
         source={(props['Source'] as string) || undefined}
         titleField={(props['Title Field'] as string) || undefined}
         descriptionField={(props['Description Field'] as string) || undefined}
