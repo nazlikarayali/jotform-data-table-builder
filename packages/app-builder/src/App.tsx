@@ -10,7 +10,7 @@ import { APP_PRESETS, EMPTY_PRESET_ID, getPresetById } from './presets/appPreset
 import { loadStoredAppTitle } from './presets/storage.ts'
 
 type Page = 'build' | 'settings' | 'publish'
-const DEFAULT_PRESET_ID = EMPTY_PRESET_ID  // Boş başlangıç — Lotus Yoga preset yerine sandbox. Copilot kapalı, AI idle.
+const DEFAULT_PRESET_ID = 'yoga-studio'  // feat/tour: Lotus Yoga preset açılır → Copilot 'done' state + "Want a quick tour?" kartı → tour çalışır.
 
 // Subscribe to URL changes — covers history navigation (popstate), fragment
 // updates (hashchange), and tab refocus after a `window.open`/`open` from

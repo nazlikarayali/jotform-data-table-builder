@@ -2227,7 +2227,6 @@ function CopilotPanel({
                 <p className="copilot-panel__done-text">
                   Your <strong>Lotus Yoga</strong> app is complete! I&rsquo;ve built a beautiful, calming mobile app.
                 </p>
-                {/* Podo suggest tour gizlendi 2026-06-03
                 <VisibleAiSuggestionCard
                   title="Want a quick tour of what you can do next?"
                   body="Your app is ready — now explore how to customize pages, connect real data, create dynamic detail views, and unlock features Copilot doesn't surface automatically."
@@ -2237,7 +2236,6 @@ function CopilotPanel({
                   }}
                   onDismiss={() => {}}
                 />
-                */}
               </>
             )}
           </div>
