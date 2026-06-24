@@ -97,6 +97,7 @@ ComponentRegistry.register({
     { name: 'Description Field', type: 'text', default: '' },
     { name: 'Image Field', type: 'text', default: '' },
     { name: 'Columns', type: 'text', default: '["Title","Description","Image"]' },
+    { name: 'PinnedColumns', type: 'text', default: '[]' },
     { name: 'Layout', type: 'select', options: ['Basic', 'Card', 'Table'], default: 'Table' },
     { name: 'Default Sort', type: 'text', default: '' },
     { name: 'Sort Order', type: 'select', options: ['Ascending', 'Descending'], default: 'Ascending' },
@@ -181,10 +182,19 @@ ComponentRegistry.register({
         if (Array.isArray(parsed)) columns = parsed.map(String);
       } catch { /* fall through to default */ }
     }
+    let pinnedColumns: string[] | undefined = undefined;
+    const pinnedRaw = props['PinnedColumns'] as string;
+    if (pinnedRaw) {
+      try {
+        const parsed = JSON.parse(pinnedRaw);
+        if (Array.isArray(parsed)) pinnedColumns = parsed.map(String);
+      } catch { /* no pins */ }
+    }
     return (
       <DataTableWithSource
         state={variants['State'] as DataTableState}
         columns={columns}
+        pinnedColumns={pinnedColumns}
         source={(props['Source'] as string) || undefined}
         titleField={(props['Title Field'] as string) || undefined}
         descriptionField={(props['Description Field'] as string) || undefined}

@@ -1884,12 +1884,40 @@ const COMMON_COLUMN_FIELDS = [
   'Address', 'Notes',
 ] as const
 
+// Maps a column (by its field name) to a leading type icon. Icon names + the
+// matching field types mirror the "columns-section" Figma (node 334:3078).
+// Heuristic on the name since columns are plain strings.
+type ColumnTypeIcon = { name: string; category: string }
+
+function getColumnTypeIcon(name: string): ColumnTypeIcon {
+  const n = name.toLowerCase()
+  if (/(long text|paragraph|description|notes?|message|comment|bio|about)/.test(n)) return { name: 'text', category: 'general' }
+  if (/(number|price|amount|quantity|qty|\bage\b|count|total|score|\bnum\b)/.test(n)) return { name: 'number-square-filled', category: 'general' }
+  if (/(phone|tel|mobile|fax)/.test(n)) return { name: 'phone-filled', category: 'communication' }
+  if (/(date|time|calendar|day|month|year)/.test(n)) return { name: 'calendar-filled', category: 'time-date' }
+  if (/(email|e-mail|\bmail\b)/.test(n)) return { name: 'at', category: 'general' }
+  if (/(file|upload|attachment|document|\bdoc\b|pdf)/.test(n)) return { name: 'paperclip-diagonal', category: 'forms-files' }
+  if (/(image|photo|picture|avatar|logo)/.test(n)) return { name: 'image-filled', category: 'media' }
+  if (/(address|location|city|country|street|zip)/.test(n)) return { name: 'location-pin-filled', category: 'general' }
+  if (/(multiple choice|multiple|checkbox|category|status|tags)/.test(n)) return { name: 'tags-filled', category: 'finance' }
+  if (/(single choice|single|radio|dropdown|\bselect\b|tag|label|choice|option)/.test(n)) return { name: 'tag-filled', category: 'finance' }
+  // Short text / name / title / everything else.
+  return { name: 'type-square-filled', category: 'editor' }
+}
+
+// At most this many columns may be pinned at once.
+const MAX_PINNED_COLUMNS = 2
+
 function DataTableColumnsPicker({
   cols,
   onChange,
+  pinned,
+  onPinnedChange,
 }: {
   cols: string[]
   onChange: (next: string[]) => void
+  pinned: string[]
+  onPinnedChange: (next: string[]) => void
 }) {
   // Minimal state: just track which row is being dragged for the visual cue.
   // Drop math is done locally using the dataTransfer payload + the target row
@@ -1901,7 +1929,23 @@ function DataTableColumnsPicker({
   const [pickerQuery, setPickerQuery] = useState('')
   const pickerWrapRef = useRef<HTMLDivElement | null>(null)
 
-  const removeAt = (idx: number) => onChange(cols.filter((_, i) => i !== idx))
+  const pinnedSet = new Set(pinned)
+  const pinLimitReached = pinned.length >= MAX_PINNED_COLUMNS
+
+  const removeAt = (idx: number) => {
+    const removed = cols[idx]
+    onChange(cols.filter((_, i) => i !== idx))
+    // Keep pinned state in sync — a removed column can't stay pinned.
+    if (pinnedSet.has(removed)) onPinnedChange(pinned.filter((c) => c !== removed))
+  }
+
+  const togglePin = (col: string) => {
+    if (pinnedSet.has(col)) {
+      onPinnedChange(pinned.filter((c) => c !== col))
+    } else if (!pinLimitReached) {
+      onPinnedChange([...pinned, col])
+    }
+  }
 
   const colsSet = new Set(cols)
   const availableFields = COMMON_COLUMN_FIELDS.filter((f) => !colsSet.has(f))
@@ -2002,7 +2046,43 @@ function DataTableColumnsPicker({
               <Icon name="grid-dots-vertical" category="general" size={20} />
             </span>
             <div className="data-table-columns__item">
+              {(() => {
+                const typeIcon = getColumnTypeIcon(col)
+                return (
+                  <span className="data-table-columns__type-icon" aria-hidden="true">
+                    <Icon name={typeIcon.name} category={typeIcon.category} size={20} />
+                  </span>
+                )
+              })()}
               <span className="data-table-columns__name">{col}</span>
+              {(() => {
+                const isPinned = pinnedSet.has(col)
+                const disabled = !isPinned && pinLimitReached
+                const tip = isPinned
+                  ? 'Unpin column'
+                  : disabled
+                    ? `Max ${MAX_PINNED_COLUMNS} pinned columns`
+                    : 'Pin column'
+                const pinClass = [
+                  'data-table-columns__pin',
+                  isPinned && 'is-pinned',
+                  disabled && 'is-disabled',
+                ]
+                  .filter(Boolean)
+                  .join(' ')
+                return (
+                  <button
+                    type="button"
+                    className={pinClass}
+                    aria-label={tip}
+                    aria-pressed={isPinned}
+                    disabled={disabled}
+                    onClick={() => togglePin(col)}
+                  >
+                    <Icon name={isPinned ? 'thumbtack-vertical-filled' : 'thumbtack-vertical'} size={18} />
+                  </button>
+                )
+              })()}
               <button
                 type="button"
                 className="data-table-columns__remove"
@@ -2041,15 +2121,31 @@ function DataTableColumnsPicker({
             </div>
             <div className="data-table-columns__picker-divider" />
             <div className="data-table-columns__picker-list">
-              {filteredAvailable.map((field) => (
-                <div key={field} className="data-table-columns__picker-row">
-                  <DSCheckbox
-                    label={field}
-                    checked={pendingPicks.has(field)}
-                    onChange={() => togglePick(field)}
-                  />
-                </div>
-              ))}
+              {filteredAvailable.map((field) => {
+                const typeIcon = getColumnTypeIcon(field)
+                const checked = pendingPicks.has(field)
+                return (
+                  <div
+                    key={field}
+                    className="data-table-columns__picker-row"
+                    role="option"
+                    aria-selected={checked}
+                    onClick={() => togglePick(field)}
+                  >
+                    <span className="data-table-columns__picker-type-icon" aria-hidden="true">
+                      <Icon name={typeIcon.name} category={typeIcon.category} size={20} />
+                    </span>
+                    <span className="data-table-columns__picker-name">{field}</span>
+                    <DSCheckbox
+                      label=""
+                      checked={checked}
+                      readOnly
+                      tabIndex={-1}
+                      className="data-table-columns__picker-check"
+                    />
+                  </div>
+                )
+              })}
             </div>
             <div className="data-table-columns__picker-divider" />
             <div className="data-table-columns__picker-footer">
@@ -5238,8 +5334,14 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
                               const colsRaw = selectedElement.properties['Columns'] as string | undefined
                               let cols: string[] = ['Title', 'Description', 'Image']
                               try { if (colsRaw) { const p = JSON.parse(colsRaw); if (Array.isArray(p)) cols = p.map(String) } } catch {}
+                              const pinnedRaw = selectedElement.properties['PinnedColumns'] as string | undefined
+                              let pinned: string[] = []
+                              try { if (pinnedRaw) { const p = JSON.parse(pinnedRaw); if (Array.isArray(p)) pinned = p.map(String) } } catch {}
+                              // Only keep pins that still point at an existing column.
+                              pinned = pinned.filter((c) => cols.includes(c)).slice(0, MAX_PINNED_COLUMNS)
                               const writeCols = (next: string[]) => handlePropertyChange(selectedElement.id, 'Columns', JSON.stringify(next))
-                              return <DataTableColumnsPicker cols={cols} onChange={writeCols} />
+                              const writePinned = (next: string[]) => handlePropertyChange(selectedElement.id, 'PinnedColumns', JSON.stringify(next))
+                              return <DataTableColumnsPicker cols={cols} onChange={writeCols} pinned={pinned} onPinnedChange={writePinned} />
                             })()}
                           </DSFormField>
                         </div>

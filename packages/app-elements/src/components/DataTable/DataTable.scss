@@ -32,9 +32,22 @@
   border-bottom-right-radius: var(--radius-lg);
 }
 
+// ---- Horizontal scroll viewport ----
+// Holds the header + body rows. When the columns' min widths sum to more than
+// the table width the rows grow past 100% and this scrolls; when they fit, the
+// rows stay at 100% and flex-grow distributes the slack (no dead gap).
+.jf-data-table__scroll {
+  overflow-x: auto;
+}
+
 // ---- Header row ----
+// grid-template-columns is set inline (identical for header + every body row),
+// so columns stay aligned regardless of content. min-width: min-content lets a
+// too-wide table grow past 100% (the viewport scrolls) with full-width row
+// backgrounds; otherwise it fills 100% and the fr tracks distribute the slack.
 .jf-data-table__header {
-  display: flex;
+  display: grid;
+  min-width: min-content;
   background: var(--bg-fill-hover);
   border-bottom: 1px solid var(--border);
   min-height: 48px;
@@ -42,7 +55,8 @@
 
 // ---- Body row ----
 .jf-data-table__row {
-  display: flex;
+  display: grid;
+  min-width: min-content;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border);
   min-height: 48px;
@@ -68,6 +82,37 @@
   }
 }
 
+// ---- Pinned columns — frozen to the left while the rest scroll ----
+// The cell sticks to the left of the scroll viewport; `left` is set inline per
+// column (cumulative width of the pinned columns before it). An opaque
+// background is required so scrolling cells don't show through underneath.
+.jf-data-table__cell--pinned {
+  position: sticky;
+  z-index: 2;
+  background: var(--bg-surface);
+}
+
+// Header + striped rows carry a different fill — match it on the pinned cell.
+.jf-data-table__cell--header.jf-data-table__cell--pinned {
+  z-index: 3;
+  background: var(--bg-fill-hover);
+}
+
+.jf-data-table__row--striped .jf-data-table__cell--pinned {
+  background: var(--bg-fill-hover);
+}
+
+// Divider on the right edge of the last frozen column separates the pinned
+// block from the scrolling columns.
+.jf-data-table__cell--pinned-last {
+  border-right: 1px solid var(--border);
+}
+
+// Keep the sticky header above the frozen body cells when both are pinned.
+.jf-data-table--sticky-header .jf-data-table__header {
+  z-index: 4;
+}
+
 // ---- Size variants — only body row height changes; header + footer stay 48px. ----
 .jf-data-table--size-small {
   .jf-data-table__row { min-height: 40px; }
@@ -78,12 +123,17 @@
 }
 
 // ---- Cell ----
+// Flex sizing (grow / basis / min / max) is applied inline per column type;
+// see columnStyle() in DataTable.tsx. flex-shrink:0 there keeps columns from
+// squishing below their min — the viewport scrolls instead.
 .jf-data-table__cell {
-  flex: 1;
   display: flex;
   align-items: center;
   padding: 0 var(--space-4);
+  // min-width: 0 lets a grid item shrink below its content so text ellipsis
+  // works; overflow clips anything wider than the column's track.
   min-width: 0;
+  overflow: hidden;
 
   &--header {
     height: 48px;
@@ -92,11 +142,16 @@
 
 // ---- Header label ----
 .jf-data-table__header-label {
+  flex: 0 1 auto;
+  min-width: 0;
   font-size: var(--font-size-paragraph-sm);
   font-weight: var(--font-weight-bold);
   color: var(--fg-primary);
   line-height: var(--line-height-label-md);
   letter-spacing: 0.4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 // ---- Sort indicator (arrow next to the currently-sorted header label) ----
@@ -112,6 +167,8 @@
 
 // ---- Body text ----
 .jf-data-table__row-text {
+  flex: 1 1 auto;
+  min-width: 0;
   font-size: var(--font-size-paragraph-sm);
   font-weight: var(--font-weight-regular);
   color: var(--fg-secondary);
@@ -123,6 +180,46 @@
   &--muted {
     color: var(--fg-tertiary);
   }
+
+  // Long-text columns wrap to multiple lines and scroll inside the cell once
+  // they exceed a few lines, instead of truncating to one line. The row grows
+  // to fit (capped by max-height).
+  &--wrap {
+    white-space: normal;
+    overflow-y: auto;
+    max-height: 132px;
+    line-height: 1.5;
+  }
+}
+
+// Top-align long-text cells so wrapped paragraphs read from the top while the
+// other (single-line) cells stay vertically centered.
+.jf-data-table__cell:has(.jf-data-table__row-text--wrap) {
+  align-items: flex-start;
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+// ---- Choice pills (single / multiple choice cells) ----
+.jf-data-table__pills {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.jf-data-table__pill {
+  flex-shrink: 0;
+  max-width: 100%;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-paragraph-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-label-md);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 // ---- Image cell (real) ----
