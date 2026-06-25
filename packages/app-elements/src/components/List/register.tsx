@@ -9,6 +9,38 @@ import { useCollections } from '../../runtime/CollectionsContext';
 
 type ListItemData = { title: string; description: string; image?: string };
 
+// One level of a multi-level sort: order the rows by `column`, then break ties
+// with the next level. The column may be any field of the connected table —
+// not just the title/description/image fields the list displays.
+export type ListSortLevel = { column: string; order: 'Ascending' | 'Descending' };
+
+// Stable multi-level sort. Numbers compare numerically, date-like strings by
+// timestamp, everything else by locale string order. Nulls sort last. Returns a
+// new array; the generic keeps each call site's row type intact.
+function sortRows<T>(rows: T[], sort?: ListSortLevel[]): T[] {
+  if (!sort || sort.length === 0) return rows;
+  return [...rows].sort((a, b) => {
+    for (const lvl of sort) {
+      const av = (a as Record<string, unknown>)[lvl.column];
+      const bv = (b as Record<string, unknown>)[lvl.column];
+      let cmp = 0;
+      if (av == null && bv == null) cmp = 0;
+      else if (av == null) cmp = 1;
+      else if (bv == null) cmp = -1;
+      else if (typeof av === 'number' && typeof bv === 'number') cmp = av - bv;
+      else {
+        const ad = Date.parse(String(av));
+        const bd = Date.parse(String(bv));
+        cmp = !Number.isNaN(ad) && !Number.isNaN(bd)
+          ? ad - bd
+          : String(av).localeCompare(String(bv));
+      }
+      if (cmp !== 0) return lvl.order === 'Descending' ? -cmp : cmp;
+    }
+    return 0;
+  });
+}
+
 interface ListWithSourceProps extends ComponentProps<typeof List> {
   source?: string;
   titleField?: string;
@@ -16,6 +48,9 @@ interface ListWithSourceProps extends ComponentProps<typeof List> {
   imageField?: string;
   emptyTitle?: string;
   emptyDescription?: string;
+  /** Cap on the total number of items shown (after sort). Undefined = no cap. */
+  limit?: number;
+  sort?: ListSortLevel[];
 }
 
 function ListWithSource({
@@ -25,6 +60,8 @@ function ListWithSource({
   imageField,
   emptyTitle,
   emptyDescription,
+  limit,
+  sort,
   items: staticItems,
   ...rest
 }: ListWithSourceProps) {
@@ -39,12 +76,23 @@ function ListWithSource({
         description: emptyDescription || 'Tap the button above to add your first one.',
       }];
     } else {
-      items = sourceItems.map((row): ListItemData => ({
+      // Sort the raw rows (which still carry every field) before projecting them
+      // down to the title/description/image the list displays.
+      items = sortRows(sourceItems, sort).map((row): ListItemData => ({
         title: (titleField && row[titleField]) || row['name'] || row['title'] || '',
         description: (descriptionField && row[descriptionField]) || row['description'] || '',
         image: imageField ? row[imageField] : undefined,
       }));
     }
+  } else if (staticItems) {
+    // Static items carry the sort fields alongside title/description/image.
+    items = sortRows(staticItems, sort);
+  }
+
+  // Cap the total items to the limit (after sort). Pagination, if on, pages
+  // within this capped set. Leave an empty-state placeholder untouched.
+  if (items && typeof limit === 'number' && limit > 0 && items.length > limit) {
+    items = items.slice(0, limit);
   }
 
   return <List {...rest} items={items} />;
@@ -112,7 +160,6 @@ ComponentRegistry.register({
 
   properties: [
     { name: 'Title', type: 'text', default: 'List' },
-    { name: 'Subtitle', type: 'text', default: '' },
     { name: 'Show Header', type: 'boolean', default: false },
     { name: 'Button Label', type: 'text', default: 'Edit' },
     { name: 'Skeleton', type: 'boolean', default: false },
@@ -241,6 +288,15 @@ ComponentRegistry.register({
       } catch { /* ignore — fall back to defaults */ }
     }
 
+    let sort: ListSortLevel[] | undefined;
+    const sortRaw = props['Sort'];
+    if (typeof sortRaw === 'string' && sortRaw.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(sortRaw);
+        if (Array.isArray(parsed)) sort = parsed.filter((s) => s && s.column);
+      } catch { /* ignore — no sort */ }
+    }
+
     return (
       <ListWithSource
         source={(props['Source'] as string) || undefined}
@@ -249,10 +305,13 @@ ComponentRegistry.register({
         imageField={(props['Image Field'] as string) || undefined}
         emptyTitle={(props['Empty Title'] as string) || undefined}
         emptyDescription={(props['Empty Description'] as string) || undefined}
+        limit={props['Limit'] ? (Number(props['Limit Count']) || undefined) : undefined}
+        showPagination={Boolean(props['Show Pagination'])}
+        itemsPerPage={Number(props['Items per page']) || 5}
+        sort={sort}
         layout={variants['Layout'] as 'Basic' | 'Card'}
         items={items}
         title={props['Title'] as string}
-        subtitle={props['Subtitle'] as string}
         showHeader={props['Show Header'] as boolean}
         // Basic layout props
         imageStyle={variants['Image Style'] as ListImageStyle}

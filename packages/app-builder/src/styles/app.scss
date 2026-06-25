@@ -5741,8 +5741,7 @@ body {
 
 // Show empty subtitle placeholder when element is selected
 .build-page__canvas-element--selected .jf-heading__subtitle--empty,
-.build-page__canvas-element--selected .jf-product-list__subtitle--empty,
-.build-page__canvas-element--selected .jf-list__subtitle--empty {
+.build-page__canvas-element--selected .jf-product-list__subtitle--empty {
   display: block;
 }
 
@@ -6569,6 +6568,25 @@ body {
     align-items: center;
     gap: 6px;
     width: 100%;
+    position: relative;
+    transition: opacity 150ms ease;
+
+    // The row being dragged fades out.
+    &.is-dragging { opacity: 0.4; }
+
+    // A blue insertion line sits in the gap above the row the cursor is over —
+    // matches the app's navigation-menu drag indicator.
+    &.is-drag-over::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -6px;
+      height: 3px;
+      border-radius: 2px;
+      background: #2B7FFF;
+      pointer-events: none;
+    }
   }
 
   &__drag {
@@ -7119,6 +7137,19 @@ body {
       width: auto;
       flex: 0 0 auto;
     }
+  }
+
+  // A toggle that reveals a dependent sub-setting: drop the divider beneath it
+  // so the toggle and its sub-field sit in the same section.
+  &--has-sub {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  // The dependent sub-setting: hugs the toggle above it (no extra divider),
+  // keeping its own bottom border to close the shared section.
+  &--sub {
+    padding-top: var(--spacing-sm);
   }
 }
 

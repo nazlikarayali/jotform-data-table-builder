@@ -50,6 +50,28 @@ export const APP_PRESETS: AppPreset[] = [
         icon: 'House',
         elements: [
           { componentId: 'data-table' },
+          {
+            componentId: 'list',
+            variants: { Layout: 'Basic', 'Image Style': 'Square', Size: 'Regular', Action: 'None' },
+            properties: {
+              Title: 'Pet Guests',
+              'Show Header': true,
+              // Mirrors the DataTable's built-in "Pet Hotel" placeholder rows so
+              // both components on this page show the same data. Each item also
+              // carries the full table schema (Pet/Owner/Room/Check-in/Status)
+              // so the list can be sorted by columns it doesn't display.
+              Items: JSON.stringify([
+                { title: 'Bella', description: 'Frank Green · Room 101', image: 'https://placedog.net/96/96?id=101', Pet: 'Bella', Owner: 'Frank Green', Room: 101, 'Check-in': 'Jun 10, 2026', Status: 'Checked in' },
+                { title: 'Max', description: 'Alice Smith · Room 102', image: 'https://placedog.net/96/96?id=102', Pet: 'Max', Owner: 'Alice Smith', Room: 102, 'Check-in': 'Jun 11, 2026', Status: 'Boarding' },
+                { title: 'Luna', description: 'Carol Davis · Room 103', image: 'https://placedog.net/96/96?id=103', Pet: 'Luna', Owner: 'Carol Davis', Room: 103, 'Check-in': 'Jun 11, 2026', Status: 'Checked in' },
+                { title: 'Charlie', description: 'David Evans · Room 104', image: 'https://placedog.net/96/96?id=104', Pet: 'Charlie', Owner: 'David Evans', Room: 104, 'Check-in': 'Jun 12, 2026', Status: 'Grooming' },
+                { title: 'Lucy', description: 'Grace Hill · Room 105', image: 'https://placedog.net/96/96?id=105', Pet: 'Lucy', Owner: 'Grace Hill', Room: 105, 'Check-in': 'Jun 12, 2026', Status: 'Daycare' },
+                { title: 'Cooper', description: 'John Doe · Room 106', image: 'https://placedog.net/96/96?id=106', Pet: 'Cooper', Owner: 'John Doe', Room: 106, 'Check-in': 'Jun 13, 2026', Status: 'Daycare' },
+                { title: 'Daisy', description: 'Bob Brown · Room 107', image: 'https://placedog.net/96/96?id=107', Pet: 'Daisy', Owner: 'Bob Brown', Room: 107, 'Check-in': 'Jun 13, 2026', Status: 'Boarding' },
+                { title: 'Rocky', description: 'Emma Foster · Room 108', image: 'https://placedog.net/96/96?id=108', Pet: 'Rocky', Owner: 'Emma Foster', Room: 108, 'Check-in': 'Jun 14, 2026', Status: 'Checked in' },
+              ]),
+            },
+          },
         ],
       },
     ],

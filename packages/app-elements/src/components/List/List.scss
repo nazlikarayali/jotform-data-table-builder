@@ -183,15 +183,80 @@
   margin: 0;
 }
 
-.jf-list__subtitle {
-  font-size: var(--font-size-label-lg);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-height-label-lg);
-  color: var(--fg-secondary);
-  overflow: hidden;
-  margin: 0;
+// ============================================
+// Pagination footer — mirrors the DataTable footer.
+// ============================================
+.jf-list__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 48px;
+  margin-top: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
 
-  &--empty {
-    display: none;
+.jf-list__footer-counter {
+  font-size: var(--font-size-paragraph-sm);
+  color: var(--fg-tertiary);
+}
+
+.jf-list__pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.jf-list__nav {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--fg-secondary);
+  cursor: pointer;
+  transition: color 150ms ease, background 150ms ease;
+
+  &:hover:not(:disabled) {
+    color: var(--fg-primary);
+  }
+
+  &:disabled {
+    color: var(--fg-disabled);
+    cursor: not-allowed;
+  }
+}
+
+.jf-list__page {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  font-family: inherit;
+  font-size: var(--font-size-paragraph-sm);
+  color: var(--fg-secondary);
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease;
+
+  &:hover:not(.jf-list__page--selected) {
+    border-color: var(--border-hover);
+    color: var(--fg-primary);
+  }
+
+  &--selected {
+    font-weight: var(--font-weight-bold);
+    color: var(--fg-primary);
+    border-color: var(--border-hover);
   }
 }

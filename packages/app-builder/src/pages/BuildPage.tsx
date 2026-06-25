@@ -24,7 +24,7 @@ import {
   type StateValues,
   HsvColorPicker,
 } from '@jf/app-elements'
-import { Icon, Button as DSButton, SearchInput, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput, Checkbox as DSCheckbox } from '@jf/design-system'
+import { Icon, Button as DSButton, SearchInput, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput, Checkbox as DSCheckbox } from '@jf/design-system'
 import phoneHomeIndicator from '@jf/design-system/src/assets/phone-home-indicator.svg'
 import previewUserAvatar from '../assets/preview-user-avatar.jpg'
 import { PhoneStatusBar } from '../components/PhoneStatusBar'
@@ -456,7 +456,6 @@ const INLINE_EDITABLE_MAP: Record<string, { selector: string; property: string }
   ],
   list: [
     { selector: '.jf-list__title', property: 'Title' },
-    { selector: '.jf-list__subtitle', property: 'Subtitle' },
   ],
   'product-list': [
     { selector: '.jf-product-list__title', property: 'Title' },
@@ -1839,7 +1838,11 @@ function TaskCompletedSummary() {
 // internal draft string, a controlled "number" input snaps back to the last
 // committed value the moment its raw value becomes invalid (empty, partial,
 // leading zero, etc.), which made it feel like the value couldn't be edited.
-function ItemsPerPageInput({
+// A positive-integer input that lets the field be cleared while typing (it
+// keeps an unsynced draft and only commits a valid number, clamped to 1–9999 on
+// blur). Plain controlled number inputs that coerce empty→default snap back to
+// the default mid-edit, which blocks typing a smaller value.
+function CountInput({
   value,
   onCommit,
 }: {
@@ -1907,6 +1910,154 @@ function getColumnTypeIcon(name: string): ColumnTypeIcon {
 
 // At most this many columns may be pinned at once.
 const MAX_PINNED_COLUMNS = 2
+
+// Schema of the table a List is connected to (sandbox: the "Pet Hotel" table).
+// The list displays only Title/Description/Image, but it can be sorted by any of
+// these columns. `kind` drives the order-direction labels. In production this
+// comes from the connected app table's fields.
+type ListColumnKind = 'text' | 'number' | 'date'
+const LIST_SORT_COLUMNS: { name: string; kind: ListColumnKind }[] = [
+  { name: 'Pet', kind: 'text' },
+  { name: 'Owner', kind: 'text' },
+  { name: 'Room', kind: 'number' },
+  { name: 'Check-in', kind: 'date' },
+  { name: 'Status', kind: 'text' },
+]
+
+type SortLevel = { column: string; order: 'Ascending' | 'Descending' }
+
+// Direction labels read naturally per column type; the stored value stays
+// Ascending/Descending so the runtime sort logic is unchanged.
+function sortOrderOptions(kind: ListColumnKind): { value: SortLevel['order']; label: string }[] {
+  switch (kind) {
+    case 'number':
+      return [{ value: 'Ascending', label: '1 → 9' }, { value: 'Descending', label: '9 → 1' }]
+    case 'date':
+      return [{ value: 'Ascending', label: 'Oldest first' }, { value: 'Descending', label: 'Newest first' }]
+    default:
+      return [{ value: 'Ascending', label: 'A → Z' }, { value: 'Descending', label: 'Z → A' }]
+  }
+}
+
+// Multi-level sort builder: each row is one level (top = primary, lower rows
+// break ties). Rows reorder by dragging the handle, which changes precedence.
+function ListSortBuilder({
+  sorts,
+  onChange,
+}: {
+  sorts: SortLevel[]
+  onChange: (next: SortLevel[]) => void
+}) {
+  const [dragSrc, setDragSrc] = useState<number | null>(null)
+  const [dragOver, setDragOver] = useState<number | null>(null)
+
+  const used = new Set(sorts.map((s) => s.column))
+  const firstFree = LIST_SORT_COLUMNS.find((c) => !used.has(c.name))?.name
+  const kindOf = (name: string): ListColumnKind =>
+    LIST_SORT_COLUMNS.find((c) => c.name === name)?.kind ?? 'text'
+
+  const addSort = () => { if (firstFree) onChange([...sorts, { column: firstFree, order: 'Ascending' }]) }
+  const setColumn = (i: number, col: string) => onChange(sorts.map((s, idx) => (idx === i ? { ...s, column: col } : s)))
+  const setOrder = (i: number, ord: SortLevel['order']) => onChange(sorts.map((s, idx) => (idx === i ? { ...s, order: ord } : s)))
+  const removeSort = (i: number) => onChange(sorts.filter((_, idx) => idx !== i))
+  const moveRow = (from: number, to: number) => {
+    if (from === to || from < 0 || to < 0 || from >= sorts.length || to >= sorts.length) return
+    const next = [...sorts]
+    const [moved] = next.splice(from, 1)
+    next.splice(to, 0, moved)
+    onChange(next)
+  }
+
+  return (
+    <div className="data-table-sort">
+      {sorts.map((s, i) => {
+        // A column can be picked once; offer the current value plus unused columns.
+        const colOptions = LIST_SORT_COLUMNS
+          .filter((c) => c.name === s.column || !used.has(c.name))
+          .map((c) => ({ value: c.name, label: c.name }))
+        const rowClass = [
+          'data-table-sort__row',
+          dragSrc === i && 'is-dragging',
+          dragOver === i && dragSrc !== null && dragSrc !== i && 'is-drag-over',
+        ]
+          .filter(Boolean)
+          .join(' ')
+        return (
+          <div
+            className={rowClass}
+            key={i}
+            onDragEnter={() => { if (dragSrc !== null) setDragOver(i) }}
+            onDragOver={(e) => {
+              if (dragSrc === null) return
+              e.preventDefault()
+              e.dataTransfer.dropEffect = 'move'
+            }}
+            onDragLeave={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                setDragOver((prev) => (prev === i ? null : prev))
+              }
+            }}
+            onDrop={(e) => {
+              e.preventDefault()
+              const from = Number(e.dataTransfer.getData('text/plain'))
+              if (!Number.isNaN(from)) moveRow(from, i)
+              setDragSrc(null)
+              setDragOver(null)
+            }}
+          >
+            {/* Only the handle starts a drag, so the dropdowns stay clickable. */}
+            <span
+              className="data-table-sort__drag"
+              aria-label="Reorder sort"
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData('text/plain', String(i))
+                e.dataTransfer.effectAllowed = 'move'
+                setTimeout(() => setDragSrc(i), 0)
+              }}
+              onDragEnd={() => { setDragSrc(null); setDragOver(null) }}
+            >
+              <Icon name="grid-dots-vertical" category="general" size={20} />
+            </span>
+            <div className="data-table-sort__pill">
+              <Icon name="bars-filter" category="general" size={16} />
+              <DSDropdownSingle
+                size="sm"
+                showLeadingIcon={false}
+                value={s.column}
+                onChange={(val) => setColumn(i, val)}
+                options={colOptions}
+              />
+            </div>
+            <div className="data-table-sort__pill data-table-sort__pill--order">
+              <DSDropdownSingle
+                size="sm"
+                showLeadingIcon={false}
+                value={s.order}
+                onChange={(val) => setOrder(i, val as SortLevel['order'])}
+                options={sortOrderOptions(kindOf(s.column))}
+              />
+            </div>
+            <button
+              type="button"
+              className="data-table-sort__btn"
+              aria-label="Remove sort"
+              onClick={() => removeSort(i)}
+            >
+              <Icon name="trash-filled" category="general" size={16} />
+            </button>
+          </div>
+        )
+      })}
+      {firstFree && (
+        <button type="button" className="data-table-sort__add" onClick={addSort}>
+          <Icon name="plus" category="general" size={14} />
+          <span>Add sort</span>
+        </button>
+      )}
+    </div>
+  )
+}
 
 function DataTableColumnsPicker({
   cols,
@@ -5081,70 +5232,63 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
                     )
                   }
 
-                  // List General tab — bespoke per Figma (Show Header, Data Source, Field mapping, Filter/Sorting, Items to show).
+                  // List General tab — bespoke: List Title, Connected Table, field mapping, Filter, Sort, Limit, Pagination.
                   if (isList && propertyTab === 'general') {
                     return (
                       <div className="property-panel__body">
                         <div className="property-panel__field">
                           <DSFormField
-                            title="Data Source"
-                            description={
-                              <>
-                                This list shows data from App Tables{' '}
-                                <DSLink
-                                  href="#"
-                                  size="sm"
-                                  rightIcon={<Icon name="arrow-up-right-from-square" category="arrows" size={14} />}
-                                >
-                                  Open
-                                </DSLink>
-                              </>
-                            }
+                            title="List Title"
+                            description="Displayed as a header above the list."
                             size="md"
                             showDescription
                             showHelpText={false}
                           >
-                            <div className="list-general__data-source">
-                              {(() => {
-                                const dataSource = String(selectedElement.properties['Data Source'] ?? 'New Table')
-                                const checkIcon = <Icon name="check" category="general" size={20} />
-                                return (
-                                  <DSDropdownSingle
-                                    value={dataSource}
-                                    onChange={(val) => handlePropertyChange(selectedElement.id, 'Data Source', val)}
-                                    options={[
-                                      {
-                                        value: 'New Table',
-                                        label: 'New Table',
-                                        leading: <Icon name="table" category="general" size={20} />,
-                                        trailing: dataSource === 'New Table' ? checkIcon : undefined,
-                                      },
-                                      {
-                                        value: 'Our Team',
-                                        label: 'Our Team',
-                                        leading: <Icon name="table" category="general" size={20} />,
-                                        trailing: dataSource === 'Our Team' ? checkIcon : undefined,
-                                      },
-                                      {
-                                        value: 'New app table',
-                                        label: 'New app table',
-                                        leading: <Icon name="plus-circle" category="general" size={20} />,
-                                        divider: true,
-                                      },
-                                    ]}
-                                  />
-                                )
-                              })()}
-                              <DSButton
-                                variant="filled"
-                                colorScheme="secondary"
-                                shape="rectangle"
-                                size="md"
-                                leftIcon={<Icon name="pencil-to-square" category="general" size={16} />}
-                                onClick={() => setEditItemsOpen(true)}
-                              >
-                                Edit Table
-                              </DSButton>
+                            <DSInput
+                              value={String(selectedElement.properties['Title'] ?? '')}
+                              placeholder="Add a title"
+                              onChange={(e) => {
+                                const v = e.target.value
+                                handlePropertyChange(selectedElement.id, 'Title', v)
+                                // No standalone Show Header toggle anymore — the header
+                                // shows whenever a title is present.
+                                handlePropertyChange(selectedElement.id, 'Show Header', v.trim().length > 0)
+                              }}
+                            />
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field">
+                          <DSFormField
+                            title="Connected Table"
+                            description={'Use "Edit List" to edit the data, or "Change Table" to switch to another set of content.'}
+                            size="md"
+                            showDescription
+                            showHelpText={false}
+                          >
+                            <div className="connected-table">
+                              <div className="connected-table__card">
+                                <div className="connected-table__icon">
+                                  <Icon name="table" category="general" size={20} />
+                                </div>
+                                <span className="connected-table__name">
+                                  {String(selectedElement.properties['Source'] || 'List Table')}
+                                </span>
+                              </div>
+                              <div className="connected-table__actions">
+                                <button
+                                  type="button"
+                                  className="connected-table__btn connected-table__btn--primary"
+                                  onClick={() => setEditItemsOpen(true)}
+                                >
+                                  Edit List
+                                </button>
+                                <button
+                                  type="button"
+                                  className="connected-table__btn connected-table__btn--secondary"
+                                >
+                                  Change Table
+                                </button>
+                              </div>
                             </div>
                           </DSFormField>
                         </div>
@@ -5213,56 +5357,100 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
                             </>
                           )
                         })()}
-                        <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField title="Filter" size="md" showDescription={false} showHelpText={false}>
-                            <DSToggle
-                              size="md"
-                              checked={Boolean(selectedElement.properties['Filter'])}
-                              onChange={(e) => handlePropertyChange(selectedElement.id, 'Filter', e.target.checked)}
-                            />
-                          </DSFormField>
-                        </div>
-                        <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField title="Sorting" size="md" showDescription={false} showHelpText={false}>
-                            <DSToggle
-                              size="md"
-                              checked={Boolean(selectedElement.properties['Sorting'])}
-                              onChange={(e) => handlePropertyChange(selectedElement.id, 'Sorting', e.target.checked)}
-                            />
+                        <div className="property-panel__field">
+                          <DSFormField
+                            title="Filter Data"
+                            description="Limit the items displayed based on their properties"
+                            size="md"
+                            showDescription
+                            showHelpText={false}
+                          >
+                            <div className="connected-table__filters">
+                              <button type="button" className="connected-table__add-filter">
+                                <Icon name="plus" category="general" size={14} />
+                                <span>Add Filter</span>
+                              </button>
+                            </div>
                           </DSFormField>
                         </div>
                         <div className="property-panel__field">
                           <DSFormField
-                            title="Items to show"
-                            description="How many list items to show at first"
+                            title="Sort"
+                            description="Order items by one or more columns of the connected table."
                             size="md"
                             showDescription
                             showHelpText={false}
                           >
-                            <DSNumberInput
-                              showUnit={false}
-                              min={1}
-                              max={999}
-                              value={Number(selectedElement.properties['Items to show']) || 10}
-                              onChange={(val) => handlePropertyChange(selectedElement.id, 'Items to show', val ?? 10)}
-                            />
+                            {(() => {
+                              const raw = selectedElement.properties['Sort'] as string | undefined
+                              let sorts: SortLevel[] = []
+                              try { if (raw) { const p = JSON.parse(raw); if (Array.isArray(p)) sorts = p.filter((s) => s && s.column) } } catch {}
+                              const write = (next: SortLevel[]) =>
+                                handlePropertyChange(selectedElement.id, 'Sort', JSON.stringify(next))
+                              return <ListSortBuilder sorts={sorts} onChange={write} />
+                            })()}
                           </DSFormField>
                         </div>
-                        <div className="property-panel__field property-panel__field--inline">
+                        <div className={`property-panel__field property-panel__field--inline${Boolean(selectedElement.properties['Limit']) ? ' property-panel__field--has-sub' : ''}`}>
                           <DSFormField
-                            title="Show Header"
-                            description="Display a header above the list items."
+                            title="Limit"
+                            description="Cap the total number of items shown."
                             size="md"
                             showDescription
                             showHelpText={false}
                           >
                             <DSToggle
                               size="md"
-                              checked={Boolean(selectedElement.properties['Show Header'])}
-                              onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Header', e.target.checked)}
+                              checked={Boolean(selectedElement.properties['Limit'])}
+                              onChange={(e) => handlePropertyChange(selectedElement.id, 'Limit', e.target.checked)}
                             />
                           </DSFormField>
                         </div>
+                        {Boolean(selectedElement.properties['Limit']) && (
+                          <div className="property-panel__field property-panel__field--sub">
+                            <DSFormField
+                              title="Maximum items"
+                              size="md"
+                              showDescription={false}
+                              showHelpText={false}
+                            >
+                              <CountInput
+                                value={Number(selectedElement.properties['Limit Count']) || 10}
+                                onCommit={(n) => handlePropertyChange(selectedElement.id, 'Limit Count', n)}
+                              />
+                            </DSFormField>
+                          </div>
+                        )}
+                        <div className={`property-panel__field property-panel__field--inline${Boolean(selectedElement.properties['Show Pagination']) ? ' property-panel__field--has-sub' : ''}`}>
+                          <DSFormField
+                            title="Show Pagination"
+                            description="Display page navigation below the list."
+                            size="md"
+                            showDescription
+                            showHelpText={false}
+                          >
+                            <DSToggle
+                              size="md"
+                              checked={Boolean(selectedElement.properties['Show Pagination'])}
+                              onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Pagination', e.target.checked)}
+                            />
+                          </DSFormField>
+                        </div>
+                        {Boolean(selectedElement.properties['Show Pagination']) && (
+                          <div className="property-panel__field property-panel__field--sub">
+                            <DSFormField
+                              title="Items per page"
+                              size="md"
+                              showDescription={false}
+                              showHelpText={false}
+                            >
+                              <CountInput
+                                value={Number(selectedElement.properties['Items per page']) || 5}
+                                onCommit={(n) => handlePropertyChange(selectedElement.id, 'Items per page', n)}
+                              />
+                            </DSFormField>
+                          </div>
+                        )}
                       </div>
                     )
                   }
@@ -5369,7 +5557,7 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
                               showDescription
                               showHelpText={false}
                             >
-                              <ItemsPerPageInput
+                              <CountInput
                                 value={Number(selectedElement.properties['Items per page']) || 5}
                                 onCommit={(n) => handlePropertyChange(selectedElement.id, 'Items per page', n)}
                               />
@@ -6004,23 +6192,6 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
 
                   return (
                     <div className="property-panel__body">
-                      {isList && propertyTab === 'general' && (
-                        <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField
-                            title="Show Header"
-                            description="Display a header above the list items."
-                            size="md"
-                            showDescription
-                            showHelpText={false}
-                          >
-                            <DSToggle
-                              size="md"
-                              checked={Boolean(selectedElement.properties['Show Header'])}
-                              onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Header', e.target.checked)}
-                            />
-                          </DSFormField>
-                        </div>
-                      )}
                       {isAppHeader && propertyTab === 'style' && (
                         <>
                           <div className="property-panel__field property-panel__field--inline">

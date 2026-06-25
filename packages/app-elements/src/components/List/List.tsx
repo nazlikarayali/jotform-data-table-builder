@@ -1,4 +1,4 @@
-import { Fragment, type FC } from 'react';
+import { Fragment, useState, type FC } from 'react';
 import { Icon } from '../Icon/Icon';
 import { Button } from '../Button';
 import { Card } from '../Card';
@@ -21,7 +21,6 @@ export type CardSize = 'Small' | 'Medium' | 'Large';
 export interface ListProps {
   layout?: ListLayout;
   title?: string;
-  subtitle?: string;
   showHeader?: boolean;
   // Basic layout props
   imageStyle?: ListImageStyle;
@@ -41,6 +40,10 @@ export interface ListProps {
   skeletonAnimation?: 'pulse' | 'shimmer';
   selected?: boolean;
   items?: ListItemData[];
+  /** Show a page-navigation footer below the list. */
+  showPagination?: boolean;
+  /** Page size when pagination is on. Default 5. */
+  itemsPerPage?: number;
 }
 
 // ============================================
@@ -191,7 +194,6 @@ const DEFAULT_ITEMS: ListItemData[] = [
 export const List: FC<ListProps> = ({
   layout = 'Basic',
   title = 'List',
-  subtitle = '',
   showHeader = true,
   imageStyle = 'Square',
   size = 'Regular',
@@ -208,13 +210,65 @@ export const List: FC<ListProps> = ({
   skeletonAnimation = 'pulse',
   selected = false,
   items = DEFAULT_ITEMS,
+  showPagination = false,
+  itemsPerPage = 5,
 }) => {
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
 
   const header = showHeader ? (
     <div className="jf-list__heading">
       <h3 className="jf-list__title">{title}</h3>
-      <p className={`jf-list__subtitle ${!subtitle ? 'jf-list__subtitle--empty' : ''}`}>{subtitle}</p>
+    </div>
+  ) : null;
+
+  // Pagination — only when enabled and there's something to page (never on the
+  // skeleton/loading branches). `page` may go stale when items shrink, so the
+  // page actually used for slicing is clamped to the available range.
+  const [page, setPage] = useState(1);
+  const paginate = showPagination && !skeleton && items.length > 0;
+  const perPage = Math.max(1, itemsPerPage || 5);
+  const totalPages = paginate ? Math.max(1, Math.ceil(items.length / perPage)) : 1;
+  const currentPage = Math.min(Math.max(1, page), totalPages);
+  const pagedItems = paginate ? items.slice((currentPage - 1) * perPage, currentPage * perPage) : items;
+  const rangeStart = items.length === 0 ? 0 : (currentPage - 1) * perPage + 1;
+  const rangeEnd = Math.min(currentPage * perPage, items.length);
+
+  const footer = paginate ? (
+    <div className="jf-list__footer">
+      <span className="jf-list__footer-counter">
+        {`Showing ${rangeStart} to ${rangeEnd} of ${items.length}`}
+      </span>
+      <div className="jf-list__pagination">
+        <button
+          type="button"
+          className="jf-list__nav"
+          aria-label="Previous page"
+          disabled={currentPage === 1}
+          onClick={() => setPage(currentPage - 1)}
+        >
+          ‹
+        </button>
+        {Array.from({ length: totalPages }).map((_, idx) => (
+          <button
+            key={idx}
+            type="button"
+            className={`jf-list__page${idx + 1 === currentPage ? ' jf-list__page--selected' : ''}`}
+            aria-current={idx + 1 === currentPage ? 'page' : undefined}
+            onClick={() => setPage(idx + 1)}
+          >
+            {idx + 1}
+          </button>
+        ))}
+        <button
+          type="button"
+          className="jf-list__nav"
+          aria-label="Next page"
+          disabled={currentPage === totalPages}
+          onClick={() => setPage(currentPage + 1)}
+        >
+          ›
+        </button>
+      </div>
     </div>
   ) : null;
 
@@ -260,7 +314,7 @@ export const List: FC<ListProps> = ({
       <div className={`jf-list jf-list--card${selected ? ' jf-list--selected' : ''}`}>
         {header}
         <div className={`jf-list__card-grid ${gridClass}`}>
-          {items.map((item, i) => (
+          {pagedItems.map((item, i) => (
             <Card
               key={i}
               imageStyle={cardImageStyle}
@@ -274,6 +328,7 @@ export const List: FC<ListProps> = ({
             />
           ))}
         </div>
+        {footer}
       </div>
     );
   }
@@ -281,12 +336,13 @@ export const List: FC<ListProps> = ({
   return (
     <div className={`jf-list jf-list--basic${selected ? ' jf-list--selected' : ''}`}>
       {header}
-      {items.map((item, i) => (
+      {pagedItems.map((item, i) => (
         <Fragment key={i}>
           <BasicListItem item={item} imageStyle={imageStyle} size={size} action={action} actionIconFilled={actionIconFilled} buttonLabel={buttonLabel} />
-          {i < items.length - 1 && <div className="jf-list__divider" />}
+          {i < pagedItems.length - 1 && <div className="jf-list__divider" />}
         </Fragment>
       ))}
+      {footer}
     </div>
   );
 };
