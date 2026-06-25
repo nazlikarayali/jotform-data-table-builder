@@ -92,9 +92,6 @@ const WIDTH_BY_KIND: Record<ColumnKind, ColumnWidth> = {
   text: { min: 120, max: 220, grow: 2 },
 };
 
-function getColumnWidth(name: string): ColumnWidth {
-  return WIDTH_BY_KIND[getColumnKind(name)];
-}
 
 // Fallback grid template (used before the table width is measured). Capped kinds
 // get a fixed `minmax(min, max)` range; uncapped kinds get `minmax(min, <grow>fr)`.
