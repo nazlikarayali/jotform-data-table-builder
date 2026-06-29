@@ -39,6 +39,7 @@ import { LivePreviewAvatarPopover } from '../components/LivePreviewAvatarPopover
 import { LivePreviewLoginPopover } from '../components/LivePreviewLoginPopover'
 import { QrPopover } from '../components/QrPopover'
 import { MobileBottomBar } from '../components/MobileBottomBar'
+import { WidgetLoadAnimation } from '../components/WidgetLoadAnimation'
 import podoAvatar from '../assets/podo-chat-avatar.png'
 import { AppPreviewScreen } from '../components/AppPreviewScreen'
 import {
@@ -4250,8 +4251,11 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
                       const visibleCount = draggedCanvasId
                         ? page.elements.filter((el) => el.id !== draggedCanvasId).length
                         : page.elements.length
-                      const isGeneratingHere = aiPhase === 'generating' && page.id === activePageId
-                      const virtuallyEmpty = visibleCount === 0 && !isGeneratingHere
+                      // The widget-load animation lives on the active page like a
+                      // placed widget — it stays put whether or not a generation
+                      // was triggered, so the empty drop-state yields to it.
+                      const showWidgetLoadHere = page.id === activePageId
+                      const virtuallyEmpty = visibleCount === 0 && !showWidgetLoadHere
                       return (
                         <DroppablePage
                           pageId={page.id}
@@ -4306,9 +4310,9 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
                               />
                             )
                           })}
-                          {aiPhase === 'generating' && page.id === activePageId && (
+                          {showWidgetLoadHere && (
                             <section className="themes-view__section themes-view__section--center build-page__generating-slot">
-                              <GeneratingWidgetBanner />
+                              <WidgetLoadAnimation />
                             </section>
                           )}
                         </DroppablePage>

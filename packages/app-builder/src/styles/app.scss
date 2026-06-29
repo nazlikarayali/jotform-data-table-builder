@@ -9523,3 +9523,20 @@ body.builder--phone-only {
 
   .jf-icon { color: currentColor; }
 }
+
+// ============================================
+// Widget Load Modal — full-screen AI build overlay
+// Keyframes for WidgetLoadAnimation.tsx (timed build animation).
+// ============================================
+@keyframes wl-spin { to { transform: rotate(360deg); } }
+@keyframes wl-glow { to { transform: rotate(360deg); } }
+@keyframes wl-actline { 0% { transform: translateX(-110%); } 100% { transform: translateX(380%); } }
+@keyframes wl-itemin { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+@keyframes wl-badgepop { 0% { transform: scale(0); opacity: 0; } 55% { transform: scale(1.14); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes wl-pulsering { 0% { transform: scale(.92); opacity: .65; } 70% { transform: scale(1.35); opacity: 0; } 100% { opacity: 0; } }
+@keyframes wl-dots { 0%, 80%, 100% { opacity: .25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-2px); } }
+@keyframes wl-burst { 0% { transform: translate(0,0) scale(.2) rotate(0); opacity: 0; } 12% { opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1) rotate(var(--rot)); opacity: 0; } }
+@keyframes wl-bannerin { from { opacity: 0; transform: translateY(10px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes wl-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes wl-scrim-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wl-card-in { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
